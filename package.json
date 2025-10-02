@@ -1,0 +1,14 @@
+{
+  "name": "budget-manager",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run server & npm run client",
+    "server": "cd backend && vercel dev",
+    "client": "cd frontend && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
