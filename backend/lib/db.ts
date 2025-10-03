@@ -1,10 +1,6 @@
 import { Db, MongoClient } from "mongodb";
 
-const uri: string | undefined = process.env.MONGODB_URI;
-
-if (!uri) {
-  throw new Error("No uri found");
-}
+const uri = process.env.MONGODB_URI as string;
 
 const client = new MongoClient(uri);
 const clientPromise = client.connect();
