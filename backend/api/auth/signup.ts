@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "../../lib/db";
+import { hashPassword, generateToken } from "../../lib/auth";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
@@ -17,14 +18,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (foundUser)
       return res.status(400).json({ error: "User already exists" });
 
-    await users.insertOne({
+    const hashedPassword = await hashPassword(password);
+
+    const user = await users.insertOne({
       name,
       email,
-      password,
+      hashedPassword,
       createdAt: new Date(),
     });
 
-    res.status(201).json({ message: "ok" });
+    const token = generateToken(user.insertedId.toString());
+
+    res.status(201).json({ token });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
