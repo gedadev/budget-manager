@@ -2,12 +2,17 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "../../lib/db";
 import { verifyPassword, generateToken } from "../../lib/auth";
 
+interface LoginBody {
+  email: string;
+  password: string;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { email, password } = req.body;
+  const { email, password } = req.body as LoginBody;
 
   try {
     const db = await getDb();
