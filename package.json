@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "npm run server & npm run client",
     "server": "cd backend && vercel dev",
-    "client": "cd frontend && npm run dev"
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
   },
   "keywords": [],
   "author": "",

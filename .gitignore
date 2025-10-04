@@ -61,3 +61,4 @@ backend/.vercel_build_output/
 *.tgz
 *.tar.gz
 *.zip
+.vercel
