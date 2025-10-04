@@ -1,5 +1,11 @@
+import { Auth } from "./pages/Auth";
+
 function App() {
-  return <></>;
+  return (
+    <>
+      <Auth />
+    </>
+  );
 }
 
 export default App;
