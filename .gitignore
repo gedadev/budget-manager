@@ -48,7 +48,6 @@ coverage/
 
 # Frontend (Vite / React / etc.)
 frontend/node_modules/
-frontend/dist/
 frontend/.vite/
 
 # Backend (Vercel Functions / Node)
