@@ -5,7 +5,7 @@ import { useFormValidations } from "../hooks/useFormValidations";
 
 export const LoginForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
-  const { validateField, errors } = useFormValidations();
+  const { validateField, errors, cleanSpaces } = useFormValidations();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: email,
@@ -15,8 +15,8 @@ export const LoginForm = ({ email, resetEmail }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    validateField(name, value);
-    setFormData({ ...formData, [name]: value });
+    validateField(name, cleanSpaces(value));
+    setFormData({ ...formData, [name]: cleanSpaces(value) });
   };
 
   const handleSubmit = async (e) => {

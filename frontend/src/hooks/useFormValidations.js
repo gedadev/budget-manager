@@ -51,8 +51,11 @@ export function useFormValidations() {
     setErrors({ ...errors, [name]: error });
   };
 
+  const cleanSpaces = (value) => value.replace(/\s/g, "");
+
   return {
     errors,
     validateField,
+    cleanSpaces,
   };
 }

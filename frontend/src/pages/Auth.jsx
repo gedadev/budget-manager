@@ -6,7 +6,7 @@ import { useFormValidations } from "../hooks/useFormValidations";
 
 export function Auth() {
   const { verifyEmail } = useAuth();
-  const { validateField, errors } = useFormValidations();
+  const { validateField, errors, cleanSpaces } = useFormValidations();
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
 
@@ -24,8 +24,8 @@ export function Auth() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    validateField(name, value);
-    setEmail(value);
+    validateField(name, cleanSpaces(value));
+    setEmail(cleanSpaces(value));
   };
 
   return (
