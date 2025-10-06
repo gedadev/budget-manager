@@ -1,9 +1,9 @@
-import { Auth } from "./pages/Auth";
+import Router from "./Router";
 
 function App() {
   return (
     <>
-      <Auth />
+      <Router />
     </>
   );
 }
