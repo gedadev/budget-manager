@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export const SignupForm = ({ email, resetEmail }) => {
+  const { access } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: email,
     name: "",
@@ -13,8 +17,11 @@ export const SignupForm = ({ email, resetEmail }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { success } = await access(formData, "signup");
+    if (success) navigate("/dashboard");
   };
 
   return (

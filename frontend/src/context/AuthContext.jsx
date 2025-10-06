@@ -29,10 +29,33 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  async function access(formData, action) {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await request(endpoints.auth[action], {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+
+      if (data instanceof Error) throw data;
+
+      localStorage.setItem("authToken", data.token);
+      return { success: true };
+    } catch (error) {
+      setError(error.message);
+      return { success: false };
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const value = {
     error,
     loading,
     verifyEmail,
+    access,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
