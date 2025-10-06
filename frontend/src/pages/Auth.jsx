@@ -2,11 +2,13 @@ import { useState } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { SignupForm } from "../components/SignupForm";
 import { useAuth } from "../hooks/useAuth";
+import { useFormValidations } from "../hooks/useFormValidations";
 
 export function Auth() {
+  const { verifyEmail } = useAuth();
+  const { validateField, errors } = useFormValidations();
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
-  const { verifyEmail } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +21,13 @@ export function Auth() {
     setFoundUser(null);
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    validateField(name, value);
+    setEmail(value);
+  };
+
   return (
     <main className="flex items-center justify-center h-screen">
       <div className="flex flex-col gap-2 border-2 p-4 mx-4 rounded-md shadow-md w-full max-w-96">
@@ -29,7 +38,7 @@ export function Auth() {
               Enter your email to continue
             </p>
             <form className="flex flex-col gap-3 mt-4" onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 relative">
                 <label htmlFor="email" className="text-sm text-gray-600">
                   Email
                 </label>
@@ -40,8 +49,13 @@ export function Auth() {
                   placeholder="you@example.com"
                   className="border-none py-2 px-3 rounded-md bg-gray-200 text-sm focus:outline-none"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleChange}
                 />
+                {errors?.email && (
+                  <span className="absolute top-full bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10">
+                    {errors.email}
+                  </span>
+                )}
               </div>
               <button
                 type="submit"

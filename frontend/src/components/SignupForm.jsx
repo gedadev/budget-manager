@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useFormValidations } from "../hooks/useFormValidations";
 
 export const SignupForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
+  const { validateField, errors } = useFormValidations();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: email,
@@ -14,6 +16,7 @@ export const SignupForm = ({ email, resetEmail }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    validateField(name, value);
     setFormData({ ...formData, [name]: value });
   };
 
@@ -40,11 +43,10 @@ export const SignupForm = ({ email, resetEmail }) => {
             placeholder="you@example.com"
             className="border-none py-2 px-3 rounded-md bg-gray-200 text-sm text-gray-400"
             value={formData.email}
-            onChange={handleChange}
             disabled
           />
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative">
           <label htmlFor="name" className="text-sm text-gray-600">
             Name
           </label>
@@ -57,8 +59,13 @@ export const SignupForm = ({ email, resetEmail }) => {
             value={formData.name}
             onChange={handleChange}
           />
+          {errors?.name && (
+            <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10 max-w-64">
+              {errors.name}
+            </span>
+          )}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative">
           <label htmlFor="password" className="text-sm text-gray-600">
             Password
           </label>
@@ -71,6 +78,11 @@ export const SignupForm = ({ email, resetEmail }) => {
             value={formData.password}
             onChange={handleChange}
           />
+          {errors?.password && (
+            <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-95 z-10 max-w-64">
+              {errors.password}
+            </span>
+          )}
         </div>
         <button
           type="submit"

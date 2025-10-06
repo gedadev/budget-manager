@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useFormValidations } from "../hooks/useFormValidations";
 
 export const LoginForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
+  const { validateField, errors } = useFormValidations();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: email,
@@ -13,6 +15,7 @@ export const LoginForm = ({ email, resetEmail }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    validateField(name, value);
     setFormData({ ...formData, [name]: value });
   };
 
@@ -43,7 +46,7 @@ export const LoginForm = ({ email, resetEmail }) => {
             disabled
           />
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative">
           <label htmlFor="password" className="text-sm text-gray-600">
             Password
           </label>
@@ -56,6 +59,11 @@ export const LoginForm = ({ email, resetEmail }) => {
             value={formData.password}
             onChange={handleChange}
           />
+          {errors?.password && (
+            <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-95 z-10 max-w-64">
+              {errors.password}
+            </span>
+          )}
         </div>
         <button
           type="submit"
