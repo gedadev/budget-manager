@@ -1,23 +1,18 @@
 import { useState } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { SignupForm } from "../components/SignupForm";
+import { useAuth } from "../hooks/useAuth";
 
 export function Auth() {
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
+  const { verifyEmail } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("/api/auth/check-email", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    setFoundUser(data.foundUser);
+    const { foundUser } = await verifyEmail(email);
+    setFoundUser(foundUser);
   };
 
   const resetEmail = () => {
