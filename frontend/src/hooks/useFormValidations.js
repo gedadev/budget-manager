@@ -5,7 +5,7 @@ export function useFormValidations() {
 
   const validators = {
     email: (email) => {
-      const emailRegex = /\b[\w.-]+@[\w.-]+\.\w{2,4}\b/;
+      const emailRegex = /\b[\w.-]+@[\w.-]+\.\w{2,10}\b/;
 
       if (!email) {
         return "Email is required";
