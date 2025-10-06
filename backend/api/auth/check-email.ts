@@ -12,8 +12,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { email } = req.body as ReqBody;
 
-  console.log(req.body);
-  console.log(email);
   try {
     const db = await getDb();
     const users = db.collection("users");
