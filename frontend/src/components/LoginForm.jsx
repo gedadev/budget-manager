@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useFormValidations } from "../hooks/useFormValidations";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { toast } from "sonner";
 
 export const LoginForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
@@ -32,8 +33,14 @@ export const LoginForm = ({ email, resetEmail }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { success } = await access(formData, "login");
-    if (success) navigate("/dashboard");
+    await toast.promise(access(formData, "login"), {
+      loading: "Logging in...",
+      success: () => {
+        navigate("/dashboard");
+        return "Welcome back";
+      },
+      error: (error) => error.message,
+    });
   };
 
   return (

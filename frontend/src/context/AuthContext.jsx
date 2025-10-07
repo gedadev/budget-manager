@@ -5,13 +5,13 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const { request, endpoints } = useApi();
-  const [error, setError] = useState(null);
+  const [authError, setAuthError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   async function verifyEmail(email) {
     try {
       setLoading(true);
-      setError(null);
+      setAuthError(null);
 
       const data = await request(endpoints.auth.check, {
         method: "POST",
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
       return { foundUser: data.foundUser };
     } catch (error) {
-      setError(error.message);
+      setAuthError(error.message);
       return { foundUser: null };
     } finally {
       setLoading(false);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   async function access(formData, action) {
     try {
       setLoading(true);
-      setError(null);
+      setAuthError(null);
 
       const data = await request(endpoints.auth[action], {
         method: "POST",
@@ -44,15 +44,15 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("authToken", data.token);
       return { success: true };
     } catch (error) {
-      setError(error.message);
-      return { success: false };
+      setAuthError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
   }
 
   const value = {
-    error,
+    authError,
     loading,
     verifyEmail,
     access,
