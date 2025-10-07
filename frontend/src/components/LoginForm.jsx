@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useFormValidations } from "../hooks/useFormValidations";
@@ -6,13 +6,21 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 export const LoginForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
-  const { validateField, errors, cleanSpaces } = useFormValidations();
+  const { validateForm, validateField, errors, cleanSpaces } =
+    useFormValidations();
   const navigate = useNavigate();
   const [visiblePassword, setVisiblePassword] = useState(false);
+  const [formIsValid, setFormIsValid] = useState(false);
   const [formData, setFormData] = useState({
     email: email,
     password: "",
   });
+
+  useEffect(() => {
+    const isValid = validateForm(formData);
+
+    setFormIsValid(isValid);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,7 +85,8 @@ export const LoginForm = ({ email, resetEmail }) => {
         </div>
         <button
           type="submit"
-          className="bg-gray-800 text-white p-2 rounded-md hover:bg-gray-700 text-sm transition-all duration-200 ease-in-out"
+          className="bg-gray-800 text-white p-2 rounded-md hover:bg-gray-700 text-sm transition-all duration-200 ease-in-out disabled:bg-gray-500"
+          disabled={!formIsValid}
         >
           Continue
         </button>

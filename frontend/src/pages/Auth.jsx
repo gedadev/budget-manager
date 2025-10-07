@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { SignupForm } from "../components/SignupForm";
 import { useAuth } from "../hooks/useAuth";
@@ -6,9 +6,17 @@ import { useFormValidations } from "../hooks/useFormValidations";
 
 export function Auth() {
   const { verifyEmail } = useAuth();
-  const { validateField, errors, cleanSpaces } = useFormValidations();
+  const { validateForm, validateField, errors, cleanSpaces } =
+    useFormValidations();
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
+  const [formIsValid, setFormIsValid] = useState(false);
+
+  useEffect(() => {
+    const isValid = validateForm({ email });
+
+    setFormIsValid(isValid);
+  }, [email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,14 +60,15 @@ export function Auth() {
                   onChange={handleChange}
                 />
                 {errors?.email && (
-                  <span className="absolute top-full bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10">
+                  <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10">
                     {errors.email}
                   </span>
                 )}
               </div>
               <button
                 type="submit"
-                className="bg-gray-800 text-white p-2 rounded-md hover:bg-gray-700 text-sm"
+                className="bg-gray-800 text-white p-2 rounded-md hover:bg-gray-700 text-sm disabled:bg-gray-500"
+                disabled={!formIsValid}
               >
                 Continue
               </button>
