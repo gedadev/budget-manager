@@ -6,7 +6,7 @@ import { useFormValidations } from "../hooks/useFormValidations";
 
 export function Auth() {
   const { verifyEmail } = useAuth();
-  const { validateForm, errors, cleanSpaces, resetErrors, handleBlur } =
+  const { validateForm, formErrors, cleanSpaces, resetErrors, handleBlur } =
     useFormValidations();
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
@@ -60,9 +60,9 @@ export function Auth() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
-                {errors?.email && (
+                {formErrors?.email && (
                   <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10">
-                    {errors.email}
+                    {formErrors.email}
                   </span>
                 )}
               </div>

@@ -6,7 +6,7 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 export const SignupForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
-  const { validateForm, errors, cleanSpaces, resetErrors, handleBlur } =
+  const { validateForm, formErrors, cleanSpaces, resetErrors, handleBlur } =
     useFormValidations();
   const navigate = useNavigate();
   const [visiblePassword, setVisiblePassword] = useState(false);
@@ -73,9 +73,9 @@ export const SignupForm = ({ email, resetEmail }) => {
             onChange={handleChange}
             onBlur={handleBlur}
           />
-          {errors?.name && (
+          {formErrors?.name && (
             <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10 max-w-64">
-              {errors.name}
+              {formErrors.name}
             </span>
           )}
         </div>
@@ -101,9 +101,9 @@ export const SignupForm = ({ email, resetEmail }) => {
               {visiblePassword ? <LuEyeClosed /> : <LuEye />}
             </div>
           </div>
-          {errors?.password && (
+          {formErrors?.password && (
             <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-95 z-10 max-w-64">
-              {errors.password}
+              {formErrors.password}
             </span>
           )}
         </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export function useFormValidations() {
-  const [errors, setErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
   const validators = {
     email: (email) => {
@@ -44,11 +44,11 @@ export function useFormValidations() {
     const error = validator(value);
 
     if (!error) {
-      const { [name]: _, ...rest } = errors;
-      setErrors(rest);
+      const { [name]: _, ...rest } = formErrors;
+      setFormErrors(rest);
       return;
     }
-    setErrors({ ...errors, [name]: error });
+    setFormErrors({ ...formErrors, [name]: error });
   };
 
   const validateForm = (formData) => {
@@ -72,12 +72,12 @@ export function useFormValidations() {
     validateField(name, cleanSpaces(value));
   };
 
-  const resetErrors = () => setErrors({});
+  const resetErrors = () => setFormErrors({});
 
   const cleanSpaces = (value) => value.replace(/\s/g, "");
 
   return {
-    errors,
+    formErrors,
     validateForm,
     cleanSpaces,
     resetErrors,
