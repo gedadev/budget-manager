@@ -66,12 +66,21 @@ export function useFormValidations() {
     return validForm;
   };
 
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    validateField(name, cleanSpaces(value));
+  };
+
+  const resetErrors = () => setErrors({});
+
   const cleanSpaces = (value) => value.replace(/\s/g, "");
 
   return {
     errors,
-    validateField,
     validateForm,
     cleanSpaces,
+    resetErrors,
+    handleBlur,
   };
 }

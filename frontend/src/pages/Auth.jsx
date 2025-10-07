@@ -6,7 +6,7 @@ import { useFormValidations } from "../hooks/useFormValidations";
 
 export function Auth() {
   const { verifyEmail } = useAuth();
-  const { validateForm, validateField, errors, cleanSpaces } =
+  const { validateForm, errors, cleanSpaces, resetErrors, handleBlur } =
     useFormValidations();
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
@@ -30,9 +30,9 @@ export function Auth() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
 
-    validateField(name, cleanSpaces(value));
+    resetErrors();
     setEmail(cleanSpaces(value));
   };
 
@@ -58,6 +58,7 @@ export function Auth() {
                   className="border-none py-2 px-3 rounded-md bg-gray-200 text-sm focus:outline-none"
                   value={email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 {errors?.email && (
                   <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10">

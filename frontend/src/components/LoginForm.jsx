@@ -6,7 +6,7 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 
 export const LoginForm = ({ email, resetEmail }) => {
   const { access } = useAuth();
-  const { validateForm, validateField, errors, cleanSpaces } =
+  const { validateForm, errors, cleanSpaces, resetErrors, handleBlur } =
     useFormValidations();
   const navigate = useNavigate();
   const [visiblePassword, setVisiblePassword] = useState(false);
@@ -25,7 +25,7 @@ export const LoginForm = ({ email, resetEmail }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    validateField(name, cleanSpaces(value));
+    resetErrors();
     setFormData({ ...formData, [name]: cleanSpaces(value) });
   };
 
@@ -69,6 +69,7 @@ export const LoginForm = ({ email, resetEmail }) => {
               className="border-none py-2 px-3 rounded-md bg-gray-200 text-sm focus:outline-none w-full"
               value={formData.password}
               onChange={handleChange}
+              onBlur={handleBlur}
             />
             <div
               className="absolute top-1/2 -translate-y-1/2 right-0 px-2 cursor-pointer"
