@@ -1,7 +1,6 @@
-import { createContext, useState } from "react";
+import { useState } from "react";
 import { useApi } from "../hooks/useApi";
-
-export const AuthContext = createContext(null);
+import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
   const { request, endpoints } = useApi();

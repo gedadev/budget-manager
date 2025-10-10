@@ -1,5 +1,5 @@
 import { Toaster } from "sonner";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthProvider";
 import Router from "./Router";
 
 function App() {
