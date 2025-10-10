@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useFormValidations } from "../hooks/useFormValidations";
+import { useFormValidations } from "../../hooks/useFormValidations";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { toast } from "sonner";
 
-export const SignupForm = ({ email, resetEmail }) => {
-  const { access } = useAuth();
+export const SignupForm = () => {
+  const { access, email, resetEmail } = useAuth();
   const { validateForm, formErrors, cleanSpaces, resetErrors, handleBlur } =
     useFormValidations();
   const navigate = useNavigate();

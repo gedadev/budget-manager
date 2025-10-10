@@ -7,6 +7,8 @@ export const AuthProvider = ({ children }) => {
   const { request, endpoints } = useApi();
   const [authError, setAuthError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [foundUser, setFoundUser] = useState(null);
 
   async function verifyEmail(email) {
     try {
@@ -29,6 +31,19 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const handleEmailChange = (value) => {
+    setEmail(value);
+  };
+
+  const handleEmailSubmit = async () => {
+    const { foundUser } = await verifyEmail(email);
+    setFoundUser(foundUser);
+  };
+
+  const resetEmail = () => {
+    setFoundUser(null);
+  };
+
   async function access(formData, action) {
     try {
       setLoading(true);
@@ -41,7 +56,6 @@ export const AuthProvider = ({ children }) => {
 
       if (data instanceof Error) throw data;
 
-      localStorage.setItem("authToken", data.token);
       return { success: true };
     } catch (error) {
       setAuthError(error.message);
@@ -56,6 +70,11 @@ export const AuthProvider = ({ children }) => {
     loading,
     verifyEmail,
     access,
+    email,
+    handleEmailChange,
+    handleEmailSubmit,
+    resetEmail,
+    foundUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
