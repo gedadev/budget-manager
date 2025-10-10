@@ -17,3 +17,7 @@ export async function verifyPassword(
 ): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
+
+export function verifyToken(token: string): string | jwt.JwtPayload {
+  return jwt.verify(token, JWT_SECRET);
+}
