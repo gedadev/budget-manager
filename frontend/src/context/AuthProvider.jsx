@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }) => {
 
       if (data instanceof Error) throw data;
 
+      localStorage.setItem("token", data.token);
       return { success: true };
     } catch (error) {
       setAuthError(error.message);
