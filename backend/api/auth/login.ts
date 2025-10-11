@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).json({ token: accessToken });
   } catch (error) {
     if (error instanceof Error)
-      return res.status(401).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     res.status(500).json({ error: "Internal server error" });
   }
 }
