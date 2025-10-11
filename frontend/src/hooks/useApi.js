@@ -8,6 +8,9 @@ const API_CONFIG = {
       signup: "/auth/signup",
       login: "/auth/login",
     },
+    user: {
+      profile: "/user/profile",
+    },
   },
   defaultHeaders: {
     "Content-Type": "application/json",
@@ -21,7 +24,7 @@ export const useApi = () => {
   }, []);
 
   const getHeaders = useCallback((additionalHeaders = {}) => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("token");
     const headers = {
       ...API_CONFIG.defaultHeaders,
       ...additionalHeaders,
