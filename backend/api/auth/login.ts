@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { verifyPassword, generateTokens, hashToken } from "../../lib/auth";
 import { getDb } from "../../lib/db";
-import { verifyPassword, generateToken } from "../../lib/auth";
 
 interface LoginBody {
   email: string;
@@ -16,25 +16,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const db = await getDb();
-    const users = db.collection("users");
+    const usersCollection = db.collection("users");
+    const refreshTokenCollection = db.collection("refresh_tokens");
 
-    const foundUser = await users.findOne({ email });
+    const foundUser = await usersCollection.findOne({ email });
 
-    if (!foundUser)
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!foundUser) throw new Error("Invalid credentials");
 
     const isValidPassword = await verifyPassword(
       password,
       foundUser.hashedPassword
     );
 
-    if (!isValidPassword)
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!isValidPassword) throw new Error("Invalid credentials");
 
-    const token = generateToken(foundUser._id.toString());
+    const userId = String(foundUser._id);
 
-    res.status(200).json({ token });
+    const { accessToken, refreshToken } = generateTokens(userId);
+
+    const hashedToken = hashToken(refreshToken);
+    const maxAgeSeconds = 60 * 60 * 24 * 30; // 30 days
+
+    await refreshTokenCollection.insertOne({
+      userId,
+      token: hashedToken,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + maxAgeSeconds * 1000),
+      blacklistedAt: null,
+    });
+
+    const cookieString = `refreshToken=${refreshToken}; Max-Age=${maxAgeSeconds}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+
+    res.setHeader("Set-Cookie", cookieString);
+    res.status(200).json({ token: accessToken });
   } catch (error) {
+    if (error instanceof Error)
+      return res.status(401).json({ error: error.message });
     res.status(500).json({ error: "Internal server error" });
   }
 }

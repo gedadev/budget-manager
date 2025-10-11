@@ -1,14 +1,28 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
+const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
+
+interface tokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
-export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "7d" });
+export function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+export function generateTokens(userId: string): tokens {
+  const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
+  const refreshToken = jwt.sign({ userId }, REFRESH_SECRET);
+
+  return { accessToken, refreshToken };
 }
 
 export async function verifyPassword(
