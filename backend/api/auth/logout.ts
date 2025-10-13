@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ).toUTCString()}; Path=/; HttpOnly; Secure; SameSite=Lax`;
 
     res.setHeader("Set-Cookie", cookieString);
-    res.status(200).json({ message: "Logged out successfully" });
+    res.end();
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
