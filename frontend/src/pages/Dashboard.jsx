@@ -1,22 +1,27 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../hooks/useApi";
+import { useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
-  const { request, endpoints } = useApi();
-  const [user, setUser] = useState();
+  const { isLogged, getUserData } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const getUser = async () => {
-      const data = await request(endpoints.user.profile, { method: "GET" });
-      setUser(data);
+    const findUser = async () => {
+      const { success } = await getUserData();
+      return success;
     };
-    getUser();
+
+    if (!findUser()) navigate("/auth");
   }, []);
 
   return (
-    <main>
-      {console.log(user)}
-      <h1>Dashboard xd</h1>
-    </main>
+    <>
+      {isLogged && (
+        <main>
+          <h1>Dashboard</h1>
+        </main>
+      )}
+    </>
   );
 }

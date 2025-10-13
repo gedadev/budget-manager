@@ -83,8 +83,10 @@ export const AuthProvider = ({ children }) => {
       if (data instanceof Error) throw data;
 
       setUserData(data);
+      return { success: true };
     } catch (error) {
       setAuthError(error.message);
+      return { success: false };
     } finally {
       setLoading(false);
     }
@@ -103,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     foundUser,
     getUserData,
     userData,
+    isLogged: !!userData?._id,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
