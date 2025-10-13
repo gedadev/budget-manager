@@ -49,6 +49,29 @@ export const useApi = () => {
           headers: requestHeaders,
         });
 
+        if (response.status === 401) {
+          const newToken = await refreshToken();
+
+          if (newToken.error)
+            throw new Error(newToken.error || "API request failed");
+
+          const retryResponse = await fetch(url, {
+            ...restOptions,
+            headers: {
+              ...requestHeaders,
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+
+          if (!retryResponse.ok) {
+            await endSession();
+            return;
+          }
+
+          localStorage.setItem("token", newToken);
+          return await retryResponse.json();
+        }
+
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "API request failed");
@@ -62,8 +85,27 @@ export const useApi = () => {
     [getApiUrl, getHeaders]
   );
 
+  const refreshToken = async () => {
+    const response = await fetch(`${API_CONFIG.baseUrl}/auth/refresh-token`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      return { error: error.error };
+    }
+
+    const { token } = await response.json();
+    return token;
+  };
+
+  const endSession = async () => {
+    await fetch("/api/auth/logout");
+    localStorage.removeItem("token");
+    window.location.href = "/auth";
+  };
+
   return {
     request,
+    endSession,
     endpoints: API_CONFIG.endpoints,
   };
 };
