@@ -77,6 +77,7 @@ export const LoginForm = () => {
               value={formData.password}
               onChange={handleChange}
               onBlur={handleBlur}
+              autoFocus
             />
             <div
               className="absolute top-1/2 -translate-y-1/2 right-0 px-2 cursor-pointer"

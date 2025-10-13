@@ -79,6 +79,7 @@ export const SignupForm = () => {
             value={formData.name}
             onChange={handleChange}
             onBlur={handleBlur}
+            autoFocus
           />
           {formErrors?.name && (
             <span className="absolute top-full right-0 bg-rose-500 text-gray-800 text-xs rounded p-1 bg-opacity-90 z-10 max-w-64">
