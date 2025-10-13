@@ -3,11 +3,12 @@ import { useApi } from "../hooks/useApi";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
-  const { request, endpoints } = useApi();
+  const { request, endSession, endpoints } = useApi();
   const [authError, setAuthError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [foundUser, setFoundUser] = useState(null);
+  const [userData, setUserData] = useState({});
 
   async function verifyEmail(email) {
     try {
@@ -65,16 +66,43 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  async function logout() {
+    endSession();
+    setAuthError(null);
+    setEmail("");
+    setFoundUser(null);
+    setUserData({});
+  }
+
+  async function getUserData() {
+    try {
+      setLoading(true);
+      setAuthError(null);
+
+      const data = await request(endpoints.user.profile);
+      if (data instanceof Error) throw data;
+
+      setUserData(data);
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const value = {
     authError,
     loading,
     verifyEmail,
     access,
+    logout,
     email,
     handleEmailChange,
     handleEmailSubmit,
     resetEmail,
     foundUser,
+    getUserData,
+    userData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
