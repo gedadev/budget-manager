@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useFormValidations } from "../../hooks/useFormValidations";
+import { useFormatter } from "../../hooks/useFormatter";
 
 export const EmailForm = () => {
   const { email, handleEmailChange, handleEmailSubmit } = useAuth();
-  const { validateForm, formErrors, cleanSpaces, resetErrors, handleBlur } =
+  const { cleanSpaces } = useFormatter();
+  const { validateForm, formErrors, resetErrors, handleBlur } =
     useFormValidations();
   const [formIsValid, setFormIsValid] = useState(false);
 

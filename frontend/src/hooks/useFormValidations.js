@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFormatter } from "./useFormatter";
 
 export function useFormValidations() {
-  const { cleanCurrency } = useFormatter();
+  const { cleanCurrency, cleanSpaces } = useFormatter();
   const [formErrors, setFormErrors] = useState({});
 
   const validators = {
@@ -106,12 +106,9 @@ export function useFormValidations() {
 
   const resetErrors = () => setFormErrors({});
 
-  const cleanSpaces = (value) => value.replace(/\s/g, "");
-
   return {
     formErrors,
     validateForm,
-    cleanSpaces,
     resetErrors,
     handleBlur,
   };

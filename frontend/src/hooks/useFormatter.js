@@ -8,6 +8,8 @@ export function useFormatter() {
 
   const cleanCurrency = (currency) => currency.replace(/\D/g, "");
 
+  const cleanSpaces = (value) => value.replace(/\s/g, "");
+
   const formatDateInput = (dateObj) => {
     const year = String(dateObj.getFullYear());
     const month = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -25,5 +27,11 @@ export function useFormatter() {
     return capitalize.join(" ");
   };
 
-  return { formatCurrency, cleanCurrency, formatDateInput, formatLabel };
+  return {
+    formatCurrency,
+    cleanCurrency,
+    cleanSpaces,
+    formatDateInput,
+    formatLabel,
+  };
 }

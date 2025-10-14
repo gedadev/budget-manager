@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useFormValidations } from "../../hooks/useFormValidations";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { toast } from "sonner";
+import { useFormatter } from "../../hooks/useFormatter";
 
 export const SignupForm = () => {
   const { access, email, resetEmail } = useAuth();
-  const { validateForm, formErrors, cleanSpaces, resetErrors, handleBlur } =
+  const { cleanSpaces } = useFormatter();
+  const { validateForm, formErrors, resetErrors, handleBlur } =
     useFormValidations();
   const navigate = useNavigate();
   const [visiblePassword, setVisiblePassword] = useState(false);
