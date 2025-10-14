@@ -18,12 +18,57 @@ const API_CONFIG = {
 };
 
 export const useApi = () => {
-  const getApiUrl = useCallback((endpoint) => {
-    let url = `${API_CONFIG.baseUrl}${endpoint}`;
-    return url;
+  const request = useCallback(async (endpoint, options = {}) => {
+    const { headers = {}, ...restOptions } = options;
+    const url = getApiUrl(endpoint);
+    const requestHeaders = getHeaders(headers);
+
+    try {
+      const response = await fetch(url, {
+        ...restOptions,
+        headers: requestHeaders,
+      });
+
+      if (response.status === 401) {
+        const newToken = await refreshToken();
+
+        if (newToken.error)
+          throw new Error(newToken.error || "API request failed");
+
+        const retryResponse = await fetch(url, {
+          ...restOptions,
+          headers: {
+            ...requestHeaders,
+            Authorization: `Bearer ${newToken}`,
+          },
+        });
+
+        if (!retryResponse.ok) {
+          await endSession();
+          return;
+        }
+
+        localStorage.setItem("token", newToken);
+        return await retryResponse.json();
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "API request failed");
+      }
+
+      return await response.json();
+    } catch (error) {
+      return error;
+    }
   }, []);
 
-  const getHeaders = useCallback((additionalHeaders = {}) => {
+  const getApiUrl = (endpoint) => {
+    let url = `${API_CONFIG.baseUrl}${endpoint}`;
+    return url;
+  };
+
+  const getHeaders = (additionalHeaders = {}) => {
     const token = localStorage.getItem("token");
     const headers = {
       ...API_CONFIG.defaultHeaders,
@@ -35,55 +80,7 @@ export const useApi = () => {
     }
 
     return headers;
-  }, []);
-
-  const request = useCallback(
-    async (endpoint, options = {}) => {
-      const { headers = {}, ...restOptions } = options;
-      const url = getApiUrl(endpoint);
-      const requestHeaders = getHeaders(headers);
-
-      try {
-        const response = await fetch(url, {
-          ...restOptions,
-          headers: requestHeaders,
-        });
-
-        if (response.status === 401) {
-          const newToken = await refreshToken();
-
-          if (newToken.error)
-            throw new Error(newToken.error || "API request failed");
-
-          const retryResponse = await fetch(url, {
-            ...restOptions,
-            headers: {
-              ...requestHeaders,
-              Authorization: `Bearer ${newToken}`,
-            },
-          });
-
-          if (!retryResponse.ok) {
-            await endSession();
-            return;
-          }
-
-          localStorage.setItem("token", newToken);
-          return await retryResponse.json();
-        }
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "API request failed");
-        }
-
-        return await response.json();
-      } catch (error) {
-        return error;
-      }
-    },
-    [getApiUrl, getHeaders]
-  );
+  };
 
   const refreshToken = async () => {
     const response = await fetch(`${API_CONFIG.baseUrl}/auth/refresh-token`);
@@ -98,7 +95,7 @@ export const useApi = () => {
   };
 
   const endSession = async () => {
-    await fetch("/api/auth/logout");
+    await fetch(`${API_CONFIG.baseUrl}/auth/logout`);
     localStorage.removeItem("token");
     window.location.href = "/auth";
   };
