@@ -2,28 +2,16 @@ import { useState } from "react";
 import { LuPlus } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
-
-const getLocalDate = () => {
-  const today = new Date();
-  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}-${String(today.getDate()).padStart(2, "0")}`;
-};
-
-const formatAmount = (amount) => {
-  return `$ ${(amount / 100).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-};
+import { useFormatter } from "../../hooks/useFormatter";
 
 export function AddExpense() {
   const { addExpense } = useExpenses();
+  const { formatCurrency, cleanCurrency, formatDateInput, formatLabel } =
+    useFormatter();
   const {} = useFormValidations();
   const [formData, setFormData] = useState({
     amount: "",
-    date: getLocalDate(),
+    date: formatDateInput(new Date(Date.now())),
     commerce: "",
     description: "",
     category: "",
@@ -32,16 +20,11 @@ export function AddExpense() {
   });
   const formInputs = [
     {
-      label: "Amount",
-      name: "amount",
+      label: "Description",
+      name: "description",
       type: "text",
-      value: formatAmount(formData.amount),
-    },
-    {
-      label: "Date",
-      name: "date",
-      type: "date",
-      value: formData.date,
+      value: formData.description,
+      placeholder: "What did you buy?",
     },
     {
       label: "Commerce",
@@ -51,11 +34,16 @@ export function AddExpense() {
       placeholder: "Where did you buy it?",
     },
     {
-      label: "Description",
-      name: "description",
+      label: "Amount",
+      name: "amount",
       type: "text",
-      value: formData.description,
-      placeholder: "What did you buy?",
+      value: formatCurrency(formData.amount),
+    },
+    {
+      label: "Date",
+      name: "date",
+      type: "date",
+      value: formData.date,
     },
   ];
   const formSelectors = [
@@ -83,8 +71,7 @@ export function AddExpense() {
     const { name, value } = e.target;
 
     if (name === "amount") {
-      const cleanedAmount = value.replace(/\D/g, "");
-      setFormData({ ...formData, [name]: cleanedAmount });
+      setFormData({ ...formData, [name]: cleanCurrency(value) });
       return;
     }
 
@@ -105,7 +92,7 @@ export function AddExpense() {
         <div className="flex flex-wrap">
           {formInputs.map((input, i) => (
             <div className="w-1/2 p-2 flex flex-col gap-2" key={i}>
-              <label htmlFor={input.name}>{input.label}</label>
+              <label htmlFor={input.name}>{formatLabel(input.label)}</label>
               <input
                 type={input.type}
                 id={input.name}
@@ -131,7 +118,7 @@ export function AddExpense() {
               >
                 {selector.options.map((option, i) => (
                   <option value={option} key={i}>
-                    {option}
+                    {formatLabel(option)}
                   </option>
                 ))}
               </select>
