@@ -8,7 +8,7 @@ export function AddExpense() {
   const { addExpense } = useExpenses();
   const { formatCurrency, cleanCurrency, formatDateInput, formatLabel } =
     useFormatter();
-  const {} = useFormValidations();
+  const { formErrors, handleBlur, resetErrors } = useFormValidations();
   const [formData, setFormData] = useState({
     amount: "",
     date: formatDateInput(new Date(Date.now())),
@@ -69,6 +69,7 @@ export function AddExpense() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    resetErrors();
 
     if (name === "amount") {
       setFormData({ ...formData, [name]: cleanCurrency(value) });
@@ -91,7 +92,10 @@ export function AddExpense() {
       <form className="text-slate-200" onSubmit={handleSubmit}>
         <div className="flex flex-wrap">
           {formInputs.map((input, i) => (
-            <div className="w-1/2 p-2 flex flex-col gap-2" key={i}>
+            <div
+              className="w-1/2 px-2 my-2 flex flex-col gap-2 relative"
+              key={i}
+            >
               <label htmlFor={input.name}>{formatLabel(input.label)}</label>
               <input
                 type={input.type}
@@ -100,8 +104,14 @@ export function AddExpense() {
                 placeholder={input.placeholder}
                 value={input.value}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
               />
+              {formErrors?.[input.name] && (
+                <span className="absolute top-full right-0 mx-2 bg-rose-500 text-slate-800 text-xs rounded p-1 bg-opacity-95 z-10 max-w-64">
+                  {formErrors[input.name]}
+                </span>
+              )}
             </div>
           ))}
         </div>

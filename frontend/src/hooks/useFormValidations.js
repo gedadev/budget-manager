@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useFormatter } from "./useFormatter";
 
 export function useFormValidations() {
+  const { cleanCurrency } = useFormatter();
   const [formErrors, setFormErrors] = useState({});
 
   const validators = {
@@ -37,10 +39,40 @@ export function useFormValidations() {
         return false;
       }
     },
+    description: (description) => {
+      if (!description) {
+        return "What did you buy?";
+      } else {
+        return false;
+      }
+    },
+    commerce: (commerce) => {
+      if (!commerce) {
+        return "Where did you buy it?";
+      } else {
+        return false;
+      }
+    },
+    amount: (amount) => {
+      if (Number(cleanCurrency(amount)) <= 0) {
+        return "Can't be free";
+      } else {
+        return false;
+      }
+    },
+    date: (date) => {
+      if (!date) {
+        return "When did you buy it?";
+      } else {
+        return false;
+      }
+    },
   };
 
   const validateField = (name, value) => {
     const validator = validators[name];
+    if (!validator) return;
+
     const error = validator(value);
 
     if (!error) {
