@@ -1,24 +1,99 @@
 import { useState } from "react";
 import { LuPlus } from "react-icons/lu";
+import { useExpenses } from "../../hooks/useExpenses";
+import { useFormValidations } from "../../hooks/useFormValidations";
+
+const getLocalDate = () => {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(today.getDate()).padStart(2, "0")}`;
+};
+
+const formatAmount = (amount) => {
+  return `$ ${(amount / 100).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
 
 export function AddExpense() {
+  const { addExpense } = useExpenses();
+  const {} = useFormValidations();
   const [formData, setFormData] = useState({
     amount: "",
-    date: "",
+    date: getLocalDate(),
+    commerce: "",
     description: "",
     category: "",
     subcategory: "",
     paymentMethod: "",
   });
+  const formInputs = [
+    {
+      label: "Amount",
+      name: "amount",
+      type: "text",
+      value: formatAmount(formData.amount),
+    },
+    {
+      label: "Date",
+      name: "date",
+      type: "date",
+      value: formData.date,
+    },
+    {
+      label: "Commerce",
+      name: "commerce",
+      type: "text",
+      value: formData.commerce,
+      placeholder: "Where did you buy it?",
+    },
+    {
+      label: "Description",
+      name: "description",
+      type: "text",
+      value: formData.description,
+      placeholder: "What did you buy?",
+    },
+  ];
+  const formSelectors = [
+    {
+      label: "Category",
+      name: "category",
+      defaultValue: formData.category,
+      options: ["basics", "lifestyle", "savings", "others"],
+    },
+    {
+      label: "Subcategory",
+      name: "subcategory",
+      defaultValue: formData.subcategory,
+      options: ["others"],
+    },
+    {
+      label: "Payment Method",
+      name: "method",
+      defaultValue: formData.method,
+      options: ["cash", "credit card"],
+    },
+  ];
 
   const handleChange = (e) => {
-    const { value, name } = e.target;
+    const { name, value } = e.target;
+
+    if (name === "amount") {
+      const cleanedAmount = value.replace(/\D/g, "");
+      setFormData({ ...formData, [name]: cleanedAmount });
+      return;
+    }
 
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    addExpense(formData);
   };
 
   return (
@@ -28,78 +103,40 @@ export function AddExpense() {
       </div>
       <form className="text-slate-200" onSubmit={handleSubmit}>
         <div className="flex flex-wrap">
-          <div className="w-1/2 p-2 flex flex-col gap-2">
-            <label htmlFor="amount">Amount</label>
-            <input
-              type="text"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            />
-          </div>
-          <div className="w-1/2 p-2 flex flex-col gap-2">
-            <label htmlFor="date">Date</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            />
-          </div>
-          <div className="w-full p-2 flex flex-col gap-2">
-            <label htmlFor="description">Description</label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              placeholder="What did you buy?"
-              value={formData.description}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            />
-          </div>
+          {formInputs.map((input, i) => (
+            <div className="w-1/2 p-2 flex flex-col gap-2" key={i}>
+              <label htmlFor={input.name}>{input.label}</label>
+              <input
+                type={input.type}
+                id={input.name}
+                name={input.name}
+                placeholder={input.placeholder}
+                value={input.value}
+                onChange={handleChange}
+                className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
+              />
+            </div>
+          ))}
         </div>
         <div className="flex justify-between">
-          <div className="p-2 flex flex-col gap-2">
-            <label htmlFor="category">Category</label>
-            <select
-              name="category"
-              id="category"
-              defaultValue={formData.category}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            >
-              <option value="">Select a category</option>
-            </select>
-          </div>
-          <div className="p-2 flex flex-col gap-2">
-            <label htmlFor="subcategory">Subcategory</label>
-            <select
-              name="subcategory"
-              id="subcategory"
-              defaultValue={formData.subcategory}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            >
-              <option value="">Optional</option>
-            </select>
-          </div>
-          <div className="p-2 flex flex-col gap-2">
-            <label htmlFor="method">Payment Method</label>
-            <select
-              name="method"
-              id="method"
-              defaultValue={formData.paymentMethod}
-              onChange={handleChange}
-              className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-            >
-              <option value="cash">Cash</option>
-            </select>
-          </div>
+          {formSelectors.map((selector, i) => (
+            <div className="p-2 flex flex-col gap-2" key={i}>
+              <label htmlFor={selector.name}>{selector.label}</label>
+              <select
+                name={selector.name}
+                id={selector.name}
+                defaultValue={selector.value}
+                onChange={handleChange}
+                className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
+              >
+                {selector.options.map((option, i) => (
+                  <option value={option} key={i}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
         <div className="px-2 mt-2">
           <button
