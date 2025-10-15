@@ -1,22 +1,21 @@
 import { useState } from "react";
-import { LuPlus } from "react-icons/lu";
+import { LuChevronDown, LuPlus } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
 import { useFormatter } from "../../hooks/useFormatter";
 
 export function AddExpense() {
   const { addExpense } = useExpenses();
-  const { formatCurrency, cleanCurrency, formatDateInput, formatLabel } =
-    useFormatter();
+  const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
   const { formErrors, handleBlur, resetErrors } = useFormValidations();
   const [formData, setFormData] = useState({
     amount: "",
     date: formatDateInput(new Date(Date.now())),
     commerce: "",
     description: "",
-    category: "",
-    subcategory: "",
-    paymentMethod: "",
+    category: "basics",
+    subcategory: "other",
+    method: "cash",
   });
   const formInputs = [
     {
@@ -51,19 +50,27 @@ export function AddExpense() {
       label: "Category",
       name: "category",
       defaultValue: formData.category,
-      options: ["basics", "lifestyle", "savings", "others"],
+      options: [
+        { label: "🌳 Basics", name: "basics" },
+        { label: "🎊 Lifestyle", name: "lifestyle" },
+        { label: "💰 Savings", name: "savings" },
+        { label: "🛒 Others", name: "others" },
+      ],
     },
     {
       label: "Subcategory",
       name: "subcategory",
       defaultValue: formData.subcategory,
-      options: ["others"],
+      options: [{ label: "🛒 Others", name: "others" }],
     },
     {
       label: "Payment Method",
       name: "method",
       defaultValue: formData.method,
-      options: ["cash", "credit card"],
+      options: [
+        { label: "💵 Cash", name: "cash" },
+        { label: "💳 Credit Card", name: "credit card" },
+      ],
     },
   ];
 
@@ -96,7 +103,7 @@ export function AddExpense() {
               className="w-1/2 px-2 my-2 flex flex-col gap-2 relative"
               key={i}
             >
-              <label htmlFor={input.name}>{formatLabel(input.label)}</label>
+              <label htmlFor={input.name}>{input.label}</label>
               <input
                 type={input.type}
                 id={input.name}
@@ -117,22 +124,11 @@ export function AddExpense() {
         </div>
         <div className="flex justify-between">
           {formSelectors.map((selector, i) => (
-            <div className="p-2 flex flex-col gap-2" key={i}>
-              <label htmlFor={selector.name}>{selector.label}</label>
-              <select
-                name={selector.name}
-                id={selector.name}
-                defaultValue={selector.value}
-                onChange={handleChange}
-                className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
-              >
-                {selector.options.map((option, i) => (
-                  <option value={option} key={i}>
-                    {formatLabel(option)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FormSelector
+              key={i}
+              selector={selector}
+              handleChange={handleChange}
+            />
           ))}
         </div>
         <div className="px-2 mt-2">
@@ -147,3 +143,48 @@ export function AddExpense() {
     </section>
   );
 }
+
+const FormSelector = ({ selector, handleChange }) => {
+  const { formatLabel } = useFormatter();
+  const [activeOptions, setActiveOptions] = useState(false);
+
+  const handleOption = (selector, option) => {
+    handleChange({
+      target: {
+        name: selector,
+        value: option,
+      },
+    });
+    setActiveOptions(!activeOptions);
+  };
+
+  return (
+    <div className="p-2 flex flex-col gap-2 relative">
+      <span>{selector.label}</span>
+      <div
+        onClick={() => setActiveOptions(!activeOptions)}
+        className="flex justify-between items-center gap-2 bg-slate-700 rounded-md p-2 text-sm cursor-pointer"
+      >
+        {formatLabel(selector.defaultValue)} <LuChevronDown />
+      </div>
+      <ul
+        className={`absolute min-w-max bg-slate-700 rounded-md p-4 text-sm flex flex-col gap-2 z-10 transition-all duration-200 ease-in-out ${
+          activeOptions
+            ? "top-full opacity-100 pointer-events-auto"
+            : "top-20 opacity-0 pointer-events-none"
+        } `}
+        style={{ wordSpacing: "0.2rem" }}
+      >
+        {selector.options.map((option, i) => (
+          <li
+            key={i}
+            className="cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out"
+            onClick={() => handleOption(selector.name, option.name)}
+          >
+            {option.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
