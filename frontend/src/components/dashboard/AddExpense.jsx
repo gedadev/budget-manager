@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LuChevronDown, LuPlus } from "react-icons/lu";
+import { LuCheck, LuChevronDown, LuPlus } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
 import { useFormatter } from "../../hooks/useFormatter";
@@ -14,7 +14,7 @@ export function AddExpense() {
     commerce: "",
     description: "",
     category: "basics",
-    subcategory: "other",
+    subcategory: "others",
     method: "cash",
   });
   const formInputs = [
@@ -178,10 +178,15 @@ const FormSelector = ({ selector, handleChange }) => {
         {selector.options.map((option, i) => (
           <li
             key={i}
-            className="cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out"
+            className={`cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center gap-2 justify-between ${
+              selector.defaultValue === option.name && "bg-purple-700"
+            }`}
             onClick={() => handleOption(selector.name, option.name)}
           >
-            {option.label}
+            <span className="min-w-24">{option.label}</span>
+            {selector.defaultValue === option.name && (
+              <LuCheck className="opacity-50" />
+            )}
           </li>
         ))}
       </ul>
