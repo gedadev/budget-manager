@@ -11,6 +11,9 @@ const API_CONFIG = {
     user: {
       profile: "/user/profile",
     },
+    expenses: {
+      new: "/expenses/new",
+    },
   },
   defaultHeaders: {
     "Content-Type": "application/json",

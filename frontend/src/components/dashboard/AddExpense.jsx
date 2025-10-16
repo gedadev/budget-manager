@@ -3,6 +3,7 @@ import { LuCheck, LuChevronDown, LuPlus } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
 import { useFormatter } from "../../hooks/useFormatter";
+import { toast } from "sonner";
 
 export function AddExpense() {
   const { addExpense } = useExpenses();
@@ -94,9 +95,24 @@ export function AddExpense() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addExpense(formData);
+    await toast.promise(addExpense(formData), {
+      loading: "Adding new entry...",
+      success: () => {
+        setFormData({
+          amount: "",
+          date: formatDateInput(new Date(Date.now())),
+          commerce: "",
+          description: "",
+          category: "basics",
+          subcategory: "others",
+          method: "cash",
+        });
+        return "Your expense was registered";
+      },
+      error: (error) => error.message,
+    });
   };
 
   return (
