@@ -1,8 +1,14 @@
+import { useEffect, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { ExpensesContext } from "./ExpensesContext";
 
 export function ExpensesProvider({ children }) {
   const { request, endpoints } = useApi();
+  const [expenses, setExpenses] = useState([]);
+
+  useEffect(() => {
+    getExpenses();
+  }, []);
 
   async function addExpense(formData) {
     try {
@@ -19,7 +25,19 @@ export function ExpensesProvider({ children }) {
     }
   }
 
-  const value = { addExpense };
+  async function getExpenses() {
+    try {
+      const expensesData = await request(endpoints.expenses.all);
+
+      if (expensesData instanceof Error) throw expensesData;
+
+      setExpenses([...expensesData]);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const value = { addExpense, getExpenses, expenses };
 
   return (
     <ExpensesContext.Provider value={value}>
