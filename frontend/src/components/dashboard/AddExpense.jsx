@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LuCheck, LuChevronDown, LuPlus } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
@@ -7,7 +7,9 @@ import { useFormatter } from "../../hooks/useFormatter";
 export function AddExpense() {
   const { addExpense } = useExpenses();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
-  const { formErrors, handleBlur, resetErrors } = useFormValidations();
+  const { formErrors, handleBlur, resetErrors, validateForm } =
+    useFormValidations();
+  const [formIsValid, setFormIsValid] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
     date: formatDateInput(new Date(Date.now())),
@@ -74,6 +76,12 @@ export function AddExpense() {
     },
   ];
 
+  useEffect(() => {
+    const isValid = validateForm(formData);
+
+    setFormIsValid(isValid);
+  }, [formData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     resetErrors();
@@ -134,7 +142,8 @@ export function AddExpense() {
         <div className="px-2 mt-2">
           <button
             type="submit"
-            className="bg-cyan-500 text-slate-700 w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-cyan-400"
+            disabled={!formIsValid}
+            className="bg-cyan-500 text-slate-700 w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-cyan-400 disabled:bg-cyan-600"
           >
             Add Expense
           </button>
