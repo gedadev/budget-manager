@@ -1,11 +1,20 @@
-import { LuReceipt, LuTrash2 } from "react-icons/lu";
+import { LuChevronRight, LuDot, LuReceipt, LuTrash2 } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
+import { useFormatter } from "../../hooks/useFormatter";
 
 export function ExpensesList() {
   const { expenses } = useExpenses();
+  const { formatDate, formatCurrency } = useFormatter();
+
+  const getDate = (dateInput) => {
+    const { date, day, month } = formatDate(dateInput);
+
+    return `${day}, ${month} ${date}`;
+  };
 
   return (
     <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md mt-4">
+      {console.log(expenses)}
       <h2 className="flex items-center gap-2 my-4 text-xl">
         <LuReceipt />
         Recent Expenses
@@ -14,18 +23,20 @@ export function ExpensesList() {
         {expenses.map((expense) => (
           <div
             key={expense._id}
-            className="w-full flex justify-between border rounded-md border-slate-600 py-2 px-3"
+            className="w-full flex justify-between rounded-md border border-slate-600 p-3"
           >
             <div>
               <h3>{expense.description}</h3>
-              <div className="flex gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-1 text-sm text-slate-400">
                 <span>{expense.category}</span>
+                <LuChevronRight />
                 <span>{expense.subcategory}</span>
-                <span>{expense.date}</span>
+                <LuDot />
+                <span>{getDate(expense.date)}</span>
               </div>
             </div>
             <div className="flex items-center gap-6">
-              <span>{expense.amount}</span>
+              <span>{formatCurrency(expense.amount)}</span>
               <div>
                 <LuTrash2 className="text-red-400" />
               </div>

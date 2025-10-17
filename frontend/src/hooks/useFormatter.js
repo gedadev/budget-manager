@@ -1,3 +1,5 @@
+import { days_en, months_en } from "../utils/main";
+
 export function useFormatter() {
   const formatCurrency = (currency) => {
     return `$ ${(currency / 100).toLocaleString("en-US", {
@@ -18,6 +20,16 @@ export function useFormatter() {
     return `${year}-${month}-${date}`;
   };
 
+  const formatDate = (dateInput) => {
+    const dateObj = new Date(dateInput);
+    const date = dateObj.getUTCDate();
+    const day = dateObj.getUTCDay();
+    const year = dateObj.getUTCFullYear();
+    const month = dateObj.getUTCMonth();
+
+    return { date, day: days_en[day], month: months_en[month], year };
+  };
+
   const formatLabel = (label) => {
     const split = label.split(" ");
     const capitalize = split.map(
@@ -32,6 +44,7 @@ export function useFormatter() {
     cleanCurrency,
     cleanSpaces,
     formatDateInput,
+    formatDate,
     formatLabel,
   };
 }
