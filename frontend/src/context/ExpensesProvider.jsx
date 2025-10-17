@@ -39,7 +39,25 @@ export function ExpensesProvider({ children }) {
     }
   }
 
-  const value = { addExpense, getExpenses, expenses };
+  async function deleteExpense(expenseId) {
+    try {
+      const deletedExpense = await request(
+        `${endpoints.expenses.update}/${expenseId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (deletedExpense instanceof Error) throw deletedExpense;
+
+      getExpenses();
+      return deletedExpense;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const value = { addExpense, getExpenses, deleteExpense, expenses };
 
   return (
     <ExpensesContext.Provider value={value}>

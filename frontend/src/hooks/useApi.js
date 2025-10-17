@@ -14,6 +14,7 @@ const API_CONFIG = {
     expenses: {
       new: "/expenses/new",
       all: "/expenses/all",
+      update: "/expenses",
     },
   },
   defaultHeaders: {
