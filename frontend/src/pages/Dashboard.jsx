@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { AddExpense } from "../components/dashboard/AddExpense";
 import { ExpensesProvider } from "../context/ExpensesProvider";
+import { ExpensesList } from "../components/dashboard/ExpensesList";
 
 export function Dashboard() {
   const { isLogged, getUserData, logout } = useAuth();
@@ -29,7 +30,10 @@ export function Dashboard() {
               </div>
             </header>
             <main className="px-4">
-              <AddExpense />
+              <div>
+                <AddExpense />
+                <ExpensesList />
+              </div>
             </main>
           </>
         )}
