@@ -19,25 +19,23 @@ export function Dashboard() {
   }, []);
 
   return (
-    <ExpensesProvider>
-      <div className="bg-slate-900 text-slate-50 min-h-screen">
-        {isLogged && (
-          <>
-            <header>
-              <div className="flex justify-between items-center mx-auto max-w-6xl h-16 p-4">
-                <h1>Dashboard</h1>
-                <button onClick={logout}>logout</button>
-              </div>
-            </header>
-            <main className="px-4">
-              <div>
-                <AddExpense />
-                <ExpensesList />
-              </div>
-            </main>
-          </>
-        )}
-      </div>
-    </ExpensesProvider>
+    <div className="bg-slate-900 text-slate-50 min-h-screen">
+      {isLogged && (
+        <ExpensesProvider>
+          <header>
+            <div className="flex justify-between items-center mx-auto max-w-6xl h-16 p-4">
+              <h1>Dashboard</h1>
+              <button onClick={logout}>logout</button>
+            </div>
+          </header>
+          <main className="px-4">
+            <div>
+              <AddExpense />
+              <ExpensesList />
+            </div>
+          </main>
+        </ExpensesProvider>
+      )}
+    </div>
   );
 }

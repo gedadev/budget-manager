@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { ExpensesContext } from "./ExpensesContext";
-import { useAuth } from "../hooks/useAuth";
 
 export function ExpensesProvider({ children }) {
   const { request, endpoints } = useApi();
-  const { isLogged } = useAuth();
   const [expenses, setExpenses] = useState([]);
 
   useEffect(() => {
     getExpenses();
-  }, [isLogged]);
+  }, []);
 
   async function addExpense(formData) {
     try {
@@ -21,6 +19,7 @@ export function ExpensesProvider({ children }) {
 
       if (newExpense instanceof Error) throw newExpense;
 
+      getExpenses();
       return { success: true };
     } catch (error) {
       throw error;
