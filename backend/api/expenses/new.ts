@@ -41,7 +41,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       category,
       subcategory,
       method,
-      userId: ObjectId.createFromHexString(userId),
+      userId,
     });
 
     res.status(201).json(newExpense);

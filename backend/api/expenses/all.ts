@@ -23,7 +23,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     const expenses = await expensesCollection
       .find({
-        userId: ObjectId.createFromHexString(userId),
+        userId,
       })
       .toArray();
 
