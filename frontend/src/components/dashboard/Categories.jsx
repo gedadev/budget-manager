@@ -1,0 +1,26 @@
+import { LuArrowLeft } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
+
+export function Categories() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="max-w-6xl mx-auto flex flex-col gap-4">
+      <header className="w-full">
+        <div className="flex items-center gap-2 text-3xl">
+          <LuArrowLeft
+            className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+            onClick={() => navigate(-1)}
+          />
+          <h1>Categories</h1>
+        </div>
+        <div className="text-sm text-slate-400 px-2">
+          <p>Manage your categories</p>
+        </div>
+      </header>
+      <section>
+        <div>Add Category</div>
+      </section>
+    </div>
+  );
+}
