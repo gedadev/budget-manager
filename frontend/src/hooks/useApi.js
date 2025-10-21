@@ -16,6 +16,11 @@ const API_CONFIG = {
       all: "/expenses/all",
       update: "/expenses",
     },
+    categories: {
+      new: "/categories/new",
+      all: "/categories/all",
+      update: "/categories",
+    },
   },
   defaultHeaders: {
     "Content-Type": "application/json",
