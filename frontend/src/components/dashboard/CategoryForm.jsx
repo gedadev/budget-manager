@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { colorOptions, emojisOptions } from "../../utils/main";
 import { LuPlus } from "react-icons/lu";
 import { useFormValidations } from "../../hooks/useFormValidations";
+import { useCategories } from "../../hooks/useCategories";
+import { toast } from "sonner";
 
 export function CategoryForm({ cancelForm }) {
   const { validateForm, handleBlur, formErrors } = useFormValidations();
+  const { addCategory } = useCategories();
   const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
   const [categoryData, setCategoryData] = useState({
@@ -54,6 +57,17 @@ export function CategoryForm({ cancelForm }) {
 
     setCategoryData({ ...categoryData, subcategories: subcategoriesArray });
     setNewSubcategory("");
+  };
+
+  const handleSubmit = async () => {
+    await toast.promise(addCategory(categoryData), {
+      loading: "Adding category...",
+      success: (result) => {
+        cancelForm();
+        return result.message;
+      },
+      error: (error) => error.message,
+    });
   };
 
   return (
@@ -143,6 +157,7 @@ export function CategoryForm({ cancelForm }) {
           Cancel
         </button>
         <button
+          onClick={handleSubmit}
           disabled={!formIsValid}
           className="bg-cyan-500 text-slate-700 font-medium rounded p-1 transition-all duration-200 ease-in-out hover:bg-cyan-400 disabled:bg-cyan-600"
         >
