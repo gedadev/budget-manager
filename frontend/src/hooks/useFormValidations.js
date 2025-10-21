@@ -39,6 +39,13 @@ export function useFormValidations() {
         return false;
       }
     },
+    categoryName: (name) => {
+      if (!name) {
+        return "Add a category name";
+      } else {
+        return false;
+      }
+    },
     description: (description) => {
       if (!description) {
         return "What did you buy?";

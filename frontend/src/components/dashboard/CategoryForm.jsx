@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colorOptions, emojisOptions } from "../../utils/main";
 import { LuPlus } from "react-icons/lu";
+import { useFormValidations } from "../../hooks/useFormValidations";
 
 export function CategoryForm() {
+  const { validateForm, handleBlur, formErrors } = useFormValidations();
+  const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
   const [categoryData, setCategoryData] = useState({
     name: "",
@@ -11,9 +14,19 @@ export function CategoryForm() {
     subcategories: [],
   });
 
+  useEffect(() => {
+    const isValid = validateForm({ categoryName: categoryData.name });
+
+    setFormIsValid(isValid);
+  }, [categoryData]);
+
   const handleCategoryData = (e) => {
     const { name, value } = e.target;
 
+    if (name === "name") {
+      const e = { target: { name: "categoryName", value } };
+      handleBlur(e);
+    }
     setCategoryData({ ...categoryData, [name]: value });
   };
 
@@ -27,7 +40,7 @@ export function CategoryForm() {
   return (
     <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4">
       <h1 className="text-xl font-bold mb-2">New Category</h1>
-      <div className="flex flex-col gap-1 text-sm">
+      <div className="flex flex-col gap-1 text-sm relative">
         <label>Category name</label>
         <input
           type="text"
@@ -37,12 +50,18 @@ export function CategoryForm() {
           onChange={handleCategoryData}
           className="bg-slate-700 text-slate-300 p-1 rounded focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
         />
+        {formErrors?.categoryName && (
+          <span className="absolute top-full right-0 bg-rose-500 text-slate-800 text-xs rounded p-1 bg-opacity-95 z-10 max-w-64">
+            {formErrors.categoryName}
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-1 text-sm">
         <p>Select an emoji</p>
         <div className="flex gap-1 flex-wrap">
-          {emojisOptions.map((emoji) => (
+          {emojisOptions.map((emoji, i) => (
             <span
+              key={i}
               className={`border border-slate-600 rounded-md p-2 cursor-pointer ${
                 categoryData.emoji === emoji && "border-cyan-400"
               }`}
@@ -58,8 +77,9 @@ export function CategoryForm() {
       <div className="flex flex-col gap-1 text-sm">
         <p>Select a color</p>
         <div className="flex gap-2">
-          {colorOptions.map((color) => (
+          {colorOptions.map((color, i) => (
             <span
+              key={i}
               className={`w-9 h-9 rounded-md cursor-pointer ${
                 categoryData.color === color && "border-2 border-slate-300"
               }`}
@@ -100,7 +120,10 @@ export function CategoryForm() {
         <button className="border border-slate-600 text-slate-400 rounded p-1">
           Cancel
         </button>
-        <button className="bg-cyan-500 text-slate-700 font-medium rounded p-1">
+        <button
+          disabled={!formIsValid}
+          className="bg-cyan-500 text-slate-700 font-medium rounded p-1 transition-all duration-200 ease-in-out hover:bg-cyan-400 disabled:bg-cyan-600"
+        >
           Add Category
         </button>
       </div>
