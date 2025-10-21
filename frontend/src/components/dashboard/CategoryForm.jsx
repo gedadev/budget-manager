@@ -142,8 +142,11 @@ export function CategoryForm({ cancelForm }) {
           </button>
         </div>
         <div className="flex gap-1 w-full text-slate-400 flex-wrap">
-          {categoryData.subcategories.map((name) => (
-            <span className="p-0.5 rounded border border-slate-600 min-w-fit">
+          {categoryData.subcategories.map((name, i) => (
+            <span
+              key={i}
+              className="p-0.5 rounded border border-slate-600 min-w-fit"
+            >
               {name}
             </span>
           ))}
