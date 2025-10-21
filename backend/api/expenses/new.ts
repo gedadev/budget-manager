@@ -44,7 +44,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       userId,
     });
 
-    res.status(201).json(newExpense);
+    res.status(201).json({ message: "Expense created successfully" });
   } catch (error) {
     if (error instanceof Error)
       return res.status(400).json({ error: error.message });

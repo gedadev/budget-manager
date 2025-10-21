@@ -46,7 +46,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       subcategoriesCollection.insertMany(subcategoryDocuments);
     }
 
-    return res.status(201).json(newCategory);
+    return res.status(201).json({ message: "Category created successfully" });
   } catch (error) {
     if (error instanceof Error)
       return res.status(400).json({ error: error.message });
