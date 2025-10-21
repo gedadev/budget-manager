@@ -3,7 +3,7 @@ import { colorOptions, emojisOptions } from "../../utils/main";
 import { LuPlus } from "react-icons/lu";
 import { useFormValidations } from "../../hooks/useFormValidations";
 
-export function CategoryForm() {
+export function CategoryForm({ cancelForm }) {
   const { validateForm, handleBlur, formErrors } = useFormValidations();
   const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
@@ -19,6 +19,25 @@ export function CategoryForm() {
 
     setFormIsValid(isValid);
   }, [categoryData]);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") cancelForm();
+    };
+
+    const handleClick = (event) => {
+      const { id } = event.target;
+      if (id === "modal-bg") cancelForm();
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
 
   const handleCategoryData = (e) => {
     const { name, value } = e.target;
@@ -117,7 +136,10 @@ export function CategoryForm() {
         </div>
       </div>
       <div className="text-sm flex justify-end gap-2">
-        <button className="border border-slate-600 text-slate-400 rounded p-1">
+        <button
+          onClick={cancelForm}
+          className="border border-slate-600 text-slate-400 rounded p-1"
+        >
           Cancel
         </button>
         <button
