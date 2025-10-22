@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { AddExpense } from "../components/dashboard/AddExpense";
+import { Outlet, useNavigate } from "react-router-dom";
 import { ExpensesProvider } from "../context/ExpensesProvider";
-import { ExpensesList } from "../components/dashboard/ExpensesList";
+import { CategoriesProvider } from "../context/CategoriesContext";
 
 export function Dashboard() {
-  const { isLogged, getUserData, logout } = useAuth();
+  const { isLogged, getUserData } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,18 +21,11 @@ export function Dashboard() {
     <div className="bg-slate-900 text-slate-50 min-h-screen">
       {isLogged && (
         <ExpensesProvider>
-          <header>
-            <div className="flex justify-between items-center mx-auto max-w-6xl h-16 p-4">
-              <h1>Dashboard</h1>
-              <button onClick={logout}>logout</button>
-            </div>
-          </header>
-          <main className="px-4">
-            <div>
-              <AddExpense />
-              <ExpensesList />
-            </div>
-          </main>
+          <CategoriesProvider>
+            <main className="px-4">
+              <Outlet />
+            </main>
+          </CategoriesProvider>
         </ExpensesProvider>
       )}
     </div>
