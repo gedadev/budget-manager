@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { colorOptions, emojisOptions } from "../../utils/main";
 import { LuPlus } from "react-icons/lu";
 import { useFormValidations } from "../../hooks/useFormValidations";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 export function CategoryForm({ cancelForm }) {
   const { validateForm, handleBlur, formErrors } = useFormValidations();
   const { addCategory } = useCategories();
+  const subcategoriesInputRef = useRef(null);
   const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
   const [categoryData, setCategoryData] = useState({
@@ -55,6 +56,8 @@ export function CategoryForm({ cancelForm }) {
   const handleSubcategories = () => {
     const subcategoriesArray = [...categoryData.subcategories, newSubcategory];
 
+    subcategoriesInputRef.current?.focus();
+
     setCategoryData({ ...categoryData, subcategories: subcategoriesArray });
     setNewSubcategory("");
   };
@@ -68,6 +71,15 @@ export function CategoryForm({ cancelForm }) {
       },
       error: (error) => error.message,
     });
+  };
+
+  const removeSubcategory = (i) => {
+    const updatedSubcategories = [
+      ...categoryData.subcategories.slice(0, i),
+      ...categoryData.subcategories.slice(i + 1),
+    ];
+
+    setCategoryData({ ...categoryData, subcategories: updatedSubcategories });
   };
 
   return (
@@ -130,6 +142,7 @@ export function CategoryForm({ cancelForm }) {
           <input
             type="text"
             placeholder="Add subcategory"
+            ref={subcategoriesInputRef}
             value={newSubcategory}
             onChange={(e) => setNewSubcategory(e.target.value)}
             className="w-full bg-slate-700 text-slate-300 p-1 rounded focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
@@ -145,7 +158,8 @@ export function CategoryForm({ cancelForm }) {
           {categoryData.subcategories.map((name, i) => (
             <span
               key={i}
-              className="p-0.5 rounded border border-slate-600 min-w-fit"
+              onClick={() => removeSubcategory(i)}
+              className="cursor-pointer py-0.5 px-1 rounded-lg border border-slate-600 min-w-fit hover:border-rose-500 transition-all duration-300"
             >
               {name}
             </span>
