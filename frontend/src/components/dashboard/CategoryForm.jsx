@@ -83,7 +83,7 @@ export function CategoryForm({ cancelForm }) {
   };
 
   return (
-    <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4">
+    <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4 mx-2">
       <h1 className="text-xl font-bold mb-2">New Category</h1>
       <div className="flex flex-col gap-1 text-sm relative">
         <label>Category name</label>

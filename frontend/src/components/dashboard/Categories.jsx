@@ -4,7 +4,7 @@ import { CategoriesList } from "./CategoriesList";
 
 export function Categories() {
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-4 pt-4">
+    <div className="max-w-6xl mx-auto flex flex-col gap-4 py-4">
       <Header />
       <CategoriesList />
     </div>
