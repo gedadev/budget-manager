@@ -12,7 +12,8 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
   const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
   const [formConfig, setFormConfig] = useState({});
-  const [categoryData, setCategoryData] = useState({
+  const [selectedCategoryData, setSelectedCategoryData] = useState({});
+  const [categoryFormData, setCategoryFormData] = useState({
     name: "",
     emoji: "🏷️",
     color: "#E67E22",
@@ -23,7 +24,10 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
     if (formAction === "new") {
       setFormConfig({
         title: "New Category",
-        label: { submitButton: "Add Category" },
+        label: {
+          submitButton: "Add Category",
+          loading: "Adding category...",
+        },
         handler: addCategory,
       });
     }
@@ -32,7 +36,13 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
       const subcategoryNames = selectedCategory.subcategories.map(
         (subcategory) => subcategory.name
       );
-      setCategoryData({
+      setSelectedCategoryData({
+        name: selectedCategory.name,
+        emoji: selectedCategory.emoji,
+        color: selectedCategory.color,
+        subcategories: subcategoryNames,
+      });
+      setCategoryFormData({
         name: selectedCategory.name,
         emoji: selectedCategory.emoji,
         color: selectedCategory.color,
@@ -41,17 +51,28 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
 
       setFormConfig({
         title: "Edit Category",
-        label: { submitButton: "Update Category" },
+        label: {
+          submitButton: "Update Category",
+          loading: "Updating category...",
+        },
         handler: updateCategory,
       });
     }
   }, []);
 
   useEffect(() => {
-    const isValid = validateForm({ categoryName: categoryData.name });
+    const isValid = validateForm({ categoryName: categoryFormData.name });
+    if (formAction === "edit") {
+      const formChanged =
+        JSON.stringify(categoryFormData) !==
+        JSON.stringify(selectedCategoryData);
+
+      setFormIsValid(isValid && formChanged);
+      return;
+    }
 
     setFormIsValid(isValid);
-  }, [categoryData]);
+  }, [categoryFormData]);
 
   useEffect(() => {
     const handleEscape = (event) => {
@@ -79,21 +100,27 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
       const e = { target: { name: "categoryName", value } };
       handleBlur(e);
     }
-    setCategoryData({ ...categoryData, [name]: value });
+    setCategoryFormData({ ...categoryFormData, [name]: value });
   };
 
   const handleSubcategories = () => {
-    const subcategoriesArray = [...categoryData.subcategories, newSubcategory];
+    const subcategoriesArray = [
+      ...categoryFormData.subcategories,
+      newSubcategory,
+    ];
 
     subcategoriesInputRef.current?.focus();
 
-    setCategoryData({ ...categoryData, subcategories: subcategoriesArray });
+    setCategoryFormData({
+      ...categoryFormData,
+      subcategories: subcategoriesArray,
+    });
     setNewSubcategory("");
   };
 
   const handleSubmit = async (action) => {
-    await toast.promise(action(categoryData, selectedCategory._id), {
-      loading: "Adding category...",
+    await toast.promise(action(categoryFormData, selectedCategory?._id), {
+      loading: formConfig.label?.loading,
       success: (result) => {
         cancelForm();
         return result.message;
@@ -104,11 +131,14 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
 
   const removeSubcategory = (i) => {
     const updatedSubcategories = [
-      ...categoryData.subcategories.slice(0, i),
-      ...categoryData.subcategories.slice(i + 1),
+      ...categoryFormData.subcategories.slice(0, i),
+      ...categoryFormData.subcategories.slice(i + 1),
     ];
 
-    setCategoryData({ ...categoryData, subcategories: updatedSubcategories });
+    setCategoryFormData({
+      ...categoryFormData,
+      subcategories: updatedSubcategories,
+    });
   };
 
   return (
@@ -120,7 +150,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
           type="text"
           placeholder="Add Category Name"
           name="name"
-          value={categoryData.name}
+          value={categoryFormData.name}
           onChange={handleCategoryData}
           className="bg-slate-700 text-slate-300 p-1 rounded focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
         />
@@ -137,7 +167,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
             <span
               key={i}
               className={`border border-slate-600 rounded-md p-2 cursor-pointer ${
-                categoryData.emoji === emoji && "border-2 border-cyan-500"
+                categoryFormData.emoji === emoji && "border-2 border-cyan-500"
               }`}
               onClick={() =>
                 handleCategoryData({ target: { name: "emoji", value: emoji } })
@@ -155,7 +185,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
             <span
               key={i}
               className={`w-9 h-9 rounded-md cursor-pointer ${
-                categoryData.color === color && "border-2 border-slate-300"
+                categoryFormData.color === color && "border-2 border-slate-300"
               }`}
               onClick={() =>
                 handleCategoryData({ target: { name: "color", value: color } })
@@ -184,7 +214,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
           </button>
         </div>
         <div className="flex gap-1 w-full text-slate-400 flex-wrap">
-          {categoryData.subcategories.map((name, i) => (
+          {categoryFormData.subcategories.map((name, i) => (
             <span
               key={i}
               onClick={() => removeSubcategory(i)}
