@@ -5,18 +5,47 @@ import { useFormValidations } from "../../hooks/useFormValidations";
 import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
 
-export function CategoryForm({ cancelForm }) {
+export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
   const { validateForm, handleBlur, formErrors } = useFormValidations();
-  const { addCategory } = useCategories();
+  const { addCategory, updateCategory } = useCategories();
   const subcategoriesInputRef = useRef(null);
   const [formIsValid, setFormIsValid] = useState();
   const [newSubcategory, setNewSubcategory] = useState("");
+  const [formConfig, setFormConfig] = useState({});
   const [categoryData, setCategoryData] = useState({
     name: "",
     emoji: "🏷️",
     color: "#E67E22",
     subcategories: [],
   });
+
+  useEffect(() => {
+    if (formAction === "new") {
+      setFormConfig({
+        title: "New Category",
+        label: { submitButton: "Add Category" },
+        handler: addCategory,
+      });
+    }
+
+    if (formAction === "edit") {
+      const subcategoryNames = selectedCategory.subcategories.map(
+        (subcategory) => subcategory.name
+      );
+      setCategoryData({
+        name: selectedCategory.name,
+        emoji: selectedCategory.emoji,
+        color: selectedCategory.color,
+        subcategories: subcategoryNames,
+      });
+
+      setFormConfig({
+        title: "Edit Category",
+        label: { submitButton: "Update Category" },
+        handler: updateCategory,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const isValid = validateForm({ categoryName: categoryData.name });
@@ -62,8 +91,8 @@ export function CategoryForm({ cancelForm }) {
     setNewSubcategory("");
   };
 
-  const handleSubmit = async () => {
-    await toast.promise(addCategory(categoryData), {
+  const handleSubmit = async (action) => {
+    await toast.promise(action(categoryData, selectedCategory._id), {
       loading: "Adding category...",
       success: (result) => {
         cancelForm();
@@ -84,12 +113,12 @@ export function CategoryForm({ cancelForm }) {
 
   return (
     <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4 mx-2">
-      <h1 className="text-xl font-bold mb-2">New Category</h1>
+      <h1 className="text-xl font-bold mb-2">{formConfig.title}</h1>
       <div className="flex flex-col gap-1 text-sm relative">
         <label>Category name</label>
         <input
           type="text"
-          placeholder="New Category"
+          placeholder="Add Category Name"
           name="name"
           value={categoryData.name}
           onChange={handleCategoryData}
@@ -108,7 +137,7 @@ export function CategoryForm({ cancelForm }) {
             <span
               key={i}
               className={`border border-slate-600 rounded-md p-2 cursor-pointer ${
-                categoryData.emoji === emoji && "border-cyan-400"
+                categoryData.emoji === emoji && "border-2 border-cyan-500"
               }`}
               onClick={() =>
                 handleCategoryData({ target: { name: "emoji", value: emoji } })
@@ -174,11 +203,11 @@ export function CategoryForm({ cancelForm }) {
           Cancel
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(formConfig.handler)}
           disabled={!formIsValid}
           className="bg-cyan-500 text-slate-700 font-medium rounded p-1 transition-all duration-200 ease-in-out hover:bg-cyan-400 disabled:bg-cyan-600"
         >
-          Add Category
+          {formConfig.label?.submitButton}
         </button>
       </div>
     </div>
