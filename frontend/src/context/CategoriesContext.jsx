@@ -39,7 +39,44 @@ export function CategoriesProvider({ children }) {
     }
   }
 
-  const value = { addCategory, categories };
+  async function deleteCategory(categoryId) {
+    try {
+      const deleted = await request(
+        `${endpoints.categories.update}/${categoryId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (deleted instanceof Error) throw deleted;
+
+      getCategories();
+      return { message: deleted.message };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function updateCategory(data, categoryId) {
+    try {
+      const updated = await request(
+        `${endpoints.categories.update}/${categoryId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (updated instanceof Error) throw updated;
+
+      getCategories();
+      return { message: updated.message };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const value = { addCategory, deleteCategory, updateCategory, categories };
 
   return (
     <CategoriesContext.Provider value={value}>
