@@ -4,22 +4,17 @@ import { useExpenses } from "../../hooks/useExpenses";
 import { useFormValidations } from "../../hooks/useFormValidations";
 import { useFormatter } from "../../hooks/useFormatter";
 import { toast } from "sonner";
+import { useCategories } from "../../hooks/useCategories";
 
 export function AddExpense() {
   const { addExpense } = useExpenses();
+  const { categories, defaultCategory } = useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
   const { formErrors, handleBlur, resetErrors, validateForm } =
     useFormValidations();
   const [formIsValid, setFormIsValid] = useState(false);
-  const [formData, setFormData] = useState({
-    amount: "",
-    date: formatDateInput(new Date(Date.now())),
-    commerce: "",
-    description: "",
-    category: "basics",
-    subcategory: "others",
-    method: "cash",
-  });
+  const [selectorsOptions, setSelectorsOptions] = useState({});
+  const [formData, setFormData] = useState({});
   const formInputs = [
     {
       label: "Description",
@@ -52,24 +47,19 @@ export function AddExpense() {
     {
       label: "Category",
       name: "category",
-      defaultValue: formData.category,
-      options: [
-        { label: "🌳 Basics", name: "basics" },
-        { label: "🎊 Lifestyle", name: "lifestyle" },
-        { label: "💰 Savings", name: "savings" },
-        { label: "🛒 Others", name: "others" },
-      ],
+      defaultValue: formData.category || "Create category",
+      options: selectorsOptions.categories,
     },
     {
       label: "Subcategory",
       name: "subcategory",
-      defaultValue: formData.subcategory,
-      options: [{ label: "🛒 Others", name: "others" }],
+      defaultValue: formData.subcategory || "Add Subcategory",
+      options: selectorsOptions.subcategories,
     },
     {
       label: "Payment Method",
       name: "method",
-      defaultValue: formData.method,
+      defaultValue: formData.method || "Loading...",
       options: [
         { label: "💵 Cash", name: "cash" },
         { label: "💳 Credit Card", name: "credit card" },
@@ -78,14 +68,84 @@ export function AddExpense() {
   ];
 
   useEffect(() => {
+    if (!categories || !defaultCategory) return;
+
+    if (categories.length === 0) {
+      setSelectorsOptions({ categories: [], subcategories: [] });
+      setFormData({
+        amount: "0",
+        date: formatDateInput(new Date(Date.now())),
+        commerce: "",
+        description: "",
+        method: "cash",
+        category: "",
+        subcategory: "",
+      });
+      return;
+    }
+
+    const categoryOptions = categories.map((category) => ({
+      label: `${category.emoji} ${category.name}`,
+      name: category.name,
+    }));
+    const subcategoryOptions = defaultCategory.subcategories?.map(
+      (subcategory) => ({
+        label: subcategory.name,
+        name: subcategory.name,
+      })
+    );
+
+    setSelectorsOptions({
+      categories: categoryOptions,
+      subcategories: subcategoryOptions || [],
+    });
+    setFormData({
+      amount: "0",
+      date: formatDateInput(new Date(Date.now())),
+      commerce: "",
+      description: "",
+      method: "cash",
+      category: defaultCategory.name,
+      subcategory: defaultCategory.subcategories?.[0]?.name,
+    });
+  }, [categories, defaultCategory]);
+
+  useEffect(() => {
     const isValid = validateForm(formData);
 
     setFormIsValid(isValid);
   }, [formData]);
 
-  const handleChange = (e) => {
+  const handleChange = (e, index) => {
     const { name, value } = e.target;
     resetErrors();
+
+    if (name === "category" && typeof index === "number") {
+      const targetCategory = categories[index];
+      const firstSubcategory = targetCategory.subcategories?.[0];
+
+      setFormData({
+        ...formData,
+        category: value,
+        subcategory: firstSubcategory?.name,
+      });
+
+      const subcategoryOptions = targetCategory.subcategories?.map(
+        (subcategory) => {
+          return {
+            label: subcategory.name,
+            name: subcategory.name,
+          };
+        }
+      );
+
+      setSelectorsOptions({
+        ...selectorsOptions,
+        subcategories: subcategoryOptions || [],
+      });
+
+      return;
+    }
 
     if (name === "amount") {
       setFormData({ ...formData, [name]: cleanCurrency(value) });
@@ -99,17 +159,17 @@ export function AddExpense() {
     e.preventDefault();
     await toast.promise(addExpense(formData), {
       loading: "Adding new entry...",
-      success: () => {
+      success: (success) => {
         setFormData({
           amount: "",
           date: formatDateInput(new Date(Date.now())),
           commerce: "",
           description: "",
-          category: "basics",
-          subcategory: "others",
+          category: defaultCategory.name,
+          subcategory: defaultCategory.subcategories?.[0]?.name,
           method: "cash",
         });
-        return "Your expense was registered";
+        return success.message;
       },
       error: (error) => error.message,
     });
@@ -173,13 +233,16 @@ const FormSelector = ({ selector, handleChange }) => {
   const { formatLabel } = useFormatter();
   const [activeOptions, setActiveOptions] = useState(false);
 
-  const handleOption = (selector, option) => {
-    handleChange({
-      target: {
-        name: selector,
-        value: option,
+  const handleOption = (selector, option, index) => {
+    handleChange(
+      {
+        target: {
+          name: selector,
+          value: option,
+        },
       },
-    });
+      index
+    );
     setActiveOptions(!activeOptions);
   };
 
@@ -200,13 +263,13 @@ const FormSelector = ({ selector, handleChange }) => {
         } `}
         style={{ wordSpacing: "0.2rem" }}
       >
-        {selector.options.map((option, i) => (
+        {selector.options?.map((option, i) => (
           <li
             key={i}
             className={`cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center gap-2 justify-between ${
               selector.defaultValue === option.name && "bg-purple-700"
             }`}
-            onClick={() => handleOption(selector.name, option.name)}
+            onClick={() => handleOption(selector.name, option.name, i)}
           >
             <span className="min-w-24">{option.label}</span>
             {selector.defaultValue === option.name && (
