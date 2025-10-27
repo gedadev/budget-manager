@@ -20,7 +20,7 @@ export function ExpensesProvider({ children }) {
       if (newExpense instanceof Error) throw newExpense;
 
       getExpenses();
-      return { success: true };
+      return newExpense;
     } catch (error) {
       throw error;
     }
