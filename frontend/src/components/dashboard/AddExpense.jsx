@@ -5,6 +5,7 @@ import { useFormValidations } from "../../hooks/useFormValidations";
 import { useFormatter } from "../../hooks/useFormatter";
 import { toast } from "sonner";
 import { useCategories } from "../../hooks/useCategories";
+import { Link } from "react-router-dom";
 
 export function AddExpense() {
   const { addExpense } = useExpenses();
@@ -47,18 +48,21 @@ export function AddExpense() {
     {
       label: "Category",
       name: "category",
+      managerRoute: "categories",
       defaultValue: formData.category || "Create category",
       options: selectorsOptions.categories,
     },
     {
       label: "Subcategory",
       name: "subcategory",
+      managerRoute: "categories",
       defaultValue: formData.subcategory || "Add Subcategory",
       options: selectorsOptions.subcategories,
     },
     {
       label: "Payment Method",
       name: "method",
+      managerRoute: "",
       defaultValue: formData.method || "Loading...",
       options: [
         { label: "💵 Cash", name: "cash" },
@@ -277,6 +281,15 @@ const FormSelector = ({ selector, handleChange }) => {
             )}
           </li>
         ))}
+        <Link to={selector.managerRoute}>
+          <li
+            className={
+              "cursor-pointer py-1 px-2 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
+            }
+          >
+            Add {selector.name}
+          </li>
+        </Link>
       </ul>
     </div>
   );
