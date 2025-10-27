@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useCategories } from "../../hooks/useCategories";
 import { Link } from "react-router-dom";
 
-export function AddExpense() {
+export function ExpenseForm() {
   const { addExpense } = useExpenses();
   const { categories, defaultCategory } = useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();

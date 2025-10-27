@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { AddExpense } from "./AddExpense";
+import { ExpenseForm } from "./ExpenseForm";
 import { ExpensesList } from "./ExpensesList";
 import { LuFolders, LuLogOut } from "react-icons/lu";
 
@@ -8,7 +8,7 @@ export function Expenses() {
   return (
     <div>
       <Header />
-      <AddExpense />
+      <ExpenseForm />
       <ExpensesList />
     </div>
   );
