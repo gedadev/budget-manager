@@ -30,6 +30,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
         },
         handler: addCategory,
       });
+      return;
     }
 
     if (formAction === "edit") {
@@ -57,6 +58,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
         },
         handler: updateCategory,
       });
+      return;
     }
   }, []);
 
@@ -167,7 +169,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
             <span
               key={i}
               className={`border border-slate-600 rounded-md p-2 cursor-pointer ${
-                categoryFormData.emoji === emoji && "border-2 border-cyan-500"
+                categoryFormData.emoji === emoji && "border-2 border-cyan-400"
               }`}
               onClick={() =>
                 handleCategoryData({ target: { name: "emoji", value: emoji } })
