@@ -51,8 +51,12 @@ const ExpenseItem = ({ expense }) => {
         <h3>{expense.description}</h3>
         <div className="flex items-center gap-1 text-sm text-slate-400">
           <span>{expense.category}</span>
-          <LuChevronRight />
-          <span>{expense.subcategory}</span>
+          {expense.subcategory && (
+            <>
+              <LuChevronRight />
+              <span>{expense.subcategory}</span>
+            </>
+          )}
           <LuDot />
           <span>{getDate(expense.date)}</span>
         </div>
