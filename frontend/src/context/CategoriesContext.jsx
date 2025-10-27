@@ -6,10 +6,24 @@ export const CategoriesContext = createContext(null);
 export function CategoriesProvider({ children }) {
   const { request, endpoints } = useApi();
   const [categories, setCategories] = useState();
+  const [defaultCategory, setDefaultCategory] = useState();
 
   useEffect(() => {
     getCategories();
   }, []);
+
+  useEffect(() => {
+    if (!categories) return;
+
+    if (categories.length === 0) {
+      setDefaultCategory({});
+      return;
+    }
+
+    const firstCategory = categories[0];
+    const foundDefault = categories.filter((category) => category.default);
+    setDefaultCategory(foundDefault._id ? foundDefault : firstCategory);
+  }, [categories]);
 
   async function addCategory(formData) {
     try {
@@ -76,7 +90,13 @@ export function CategoriesProvider({ children }) {
     }
   }
 
-  const value = { addCategory, deleteCategory, updateCategory, categories };
+  const value = {
+    addCategory,
+    deleteCategory,
+    updateCategory,
+    categories,
+    defaultCategory,
+  };
 
   return (
     <CategoriesContext.Provider value={value}>
