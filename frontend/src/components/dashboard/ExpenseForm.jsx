@@ -21,6 +21,7 @@ export function ExpenseForm({
   const [formIsValid, setFormIsValid] = useState(false);
   const [selectorsOptions, setSelectorsOptions] = useState({});
   const [formConfig, setFormConfig] = useState();
+  const [selectedExpenseData, setSelectedExpenseData] = useState({});
   const [formData, setFormData] = useState({});
   const formInputs = [
     {
@@ -123,6 +124,25 @@ export function ExpenseForm({
         handler: updateExpense,
       });
 
+      setSelectedExpenseData({
+        amount: String(selectedExpense.amount),
+        date: formatDateInput(new Date(selectedExpense.date)),
+        commerce: selectedExpense.commerce,
+        description: selectedExpense.description,
+        // method: "cash",
+        categoryId: selectedExpense.categoryId,
+        subcategoryId: selectedExpense.subcategoryId,
+      });
+      setFormData({
+        amount: String(selectedExpense.amount),
+        date: formatDateInput(new Date(selectedExpense.date)),
+        commerce: selectedExpense.commerce,
+        description: selectedExpense.description,
+        // method: "cash",
+        categoryId: selectedExpense.categoryId,
+        subcategoryId: selectedExpense.subcategoryId,
+      });
+
       return;
     }
   }, []);
@@ -161,7 +181,7 @@ export function ExpenseForm({
       subcategories: subcategoryOptions || [],
     });
 
-    if (formAction === "new") {
+    if (formAction === "new")
       setFormData({
         amount: "0",
         date: formatDateInput(new Date(Date.now())),
@@ -171,27 +191,17 @@ export function ExpenseForm({
         categoryId: defaultCategory._id,
         subcategoryId: defaultCategory.subcategories?.[0]?._id,
       });
-
-      return;
-    }
-
-    if (formAction === "edit") {
-      setFormData({
-        amount: String(selectedExpense.amount),
-        date: formatDateInput(new Date(selectedExpense.date)),
-        commerce: selectedExpense.commerce,
-        description: selectedExpense.description,
-        // method: "cash",
-        categoryId: selectedExpense.categoryId,
-        subcategoryId: selectedExpense.subcategoryId,
-      });
-
-      return;
-    }
   }, [categories, defaultCategory, selectedExpense]);
 
   useEffect(() => {
     const isValid = validateForm(formData);
+    if (formAction === "edit") {
+      const formChanged =
+        JSON.stringify(formData) !== JSON.stringify(selectedExpenseData);
+
+      setFormIsValid(isValid && formChanged);
+      return;
+    }
 
     setFormIsValid(isValid);
   }, [formData]);
