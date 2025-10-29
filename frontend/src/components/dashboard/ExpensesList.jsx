@@ -7,6 +7,7 @@ import {
 } from "react-icons/lu";
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormatter } from "../../hooks/useFormatter";
+import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
 
 export function ExpensesList() {
@@ -29,6 +30,7 @@ export function ExpensesList() {
 
 const ExpenseItem = ({ expense }) => {
   const { deleteExpense } = useExpenses();
+  const { getCategoryName, getSubcategoryName } = useCategories();
   const { formatDate, formatCurrency } = useFormatter();
 
   const getDate = (dateInput) => {
@@ -50,11 +52,11 @@ const ExpenseItem = ({ expense }) => {
       <div>
         <h3>{expense.description}</h3>
         <div className="flex items-center gap-1 text-sm text-slate-400">
-          <span>{expense.category}</span>
-          {expense.subcategory && (
+          <span>{getCategoryName(expense.categoryId)}</span>
+          {expense.subcategoryId && (
             <>
               <LuChevronRight />
-              <span>{expense.subcategory}</span>
+              <span>{getSubcategoryName(expense.subcategoryId)}</span>
             </>
           )}
           <LuDot />
