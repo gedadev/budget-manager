@@ -8,8 +8,8 @@ interface NewExpenseBody {
   date: string;
   commerce: string;
   description: string;
-  category: string;
-  subcategory: string;
+  categoryId: string;
+  subcategoryId: string;
   method: string;
 }
 
@@ -18,8 +18,15 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { amount, date, commerce, description, category, subcategory, method } =
-    req.body as NewExpenseBody;
+  const {
+    amount,
+    date,
+    commerce,
+    description,
+    categoryId,
+    subcategoryId,
+    method,
+  } = req.body as NewExpenseBody;
   const { userId } = req.body;
 
   try {
@@ -33,13 +40,13 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!foundUser) throw new Error("User not found");
 
-    const newExpense = await expensesCollection.insertOne({
+    await expensesCollection.insertOne({
       amount: Number(amount),
       date: new Date(date),
       commerce,
       description,
-      category,
-      subcategory,
+      categoryId,
+      subcategoryId,
       method,
       userId,
     });
