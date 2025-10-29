@@ -7,8 +7,12 @@ import { toast } from "sonner";
 import { useCategories } from "../../hooks/useCategories";
 import { Link } from "react-router-dom";
 
-export function ExpenseForm() {
-  const { addExpense } = useExpenses();
+export function ExpenseForm({
+  cancelForm,
+  formAction = "new",
+  selectedExpense,
+}) {
+  const { addExpense, updateExpense } = useExpenses();
   const { categories, defaultCategory, getCategoryName, getSubcategoryName } =
     useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
@@ -16,6 +20,7 @@ export function ExpenseForm() {
     useFormValidations();
   const [formIsValid, setFormIsValid] = useState(false);
   const [selectorsOptions, setSelectorsOptions] = useState({});
+  const [formConfig, setFormConfig] = useState();
   const [formData, setFormData] = useState({});
   const formInputs = [
     {
@@ -74,6 +79,34 @@ export function ExpenseForm() {
   ];
 
   useEffect(() => {
+    if (formAction === "new") {
+      setFormConfig({
+        title: "Add Expense",
+        label: {
+          submitButton: "Add Expense",
+          loading: "Adding expense...",
+        },
+        handler: addExpense,
+      });
+
+      return;
+    }
+
+    if (formAction === "edit") {
+      setFormConfig({
+        title: "Edit Expense",
+        label: {
+          submitButton: "Update Expense",
+          loading: "Updating expense...",
+        },
+        handler: updateExpense,
+      });
+
+      return;
+    }
+  }, []);
+
+  useEffect(() => {
     if (!categories || !defaultCategory) return;
 
     if (categories.length === 0) {
@@ -107,16 +140,34 @@ export function ExpenseForm() {
       subcategories: subcategoryOptions || [],
     });
 
-    setFormData({
-      amount: "0",
-      date: formatDateInput(new Date(Date.now())),
-      commerce: "",
-      description: "",
-      // method: "cash",
-      categoryId: defaultCategory._id,
-      subcategoryId: defaultCategory.subcategories?.[0]?._id,
-    });
-  }, [categories, defaultCategory]);
+    if (formAction === "new") {
+      setFormData({
+        amount: "0",
+        date: formatDateInput(new Date(Date.now())),
+        commerce: "",
+        description: "",
+        // method: "cash",
+        categoryId: defaultCategory._id,
+        subcategoryId: defaultCategory.subcategories?.[0]?._id,
+      });
+
+      return;
+    }
+
+    if (formAction === "edit") {
+      setFormData({
+        amount: String(selectedExpense.amount),
+        date: formatDateInput(new Date(selectedExpense.date)),
+        commerce: selectedExpense.commerce,
+        description: selectedExpense.description,
+        // method: "cash",
+        categoryId: selectedExpense.categoryId,
+        subcategoryId: selectedExpense.subcategoryId,
+      });
+
+      return;
+    }
+  }, [categories, defaultCategory, selectedExpense]);
 
   useEffect(() => {
     const isValid = validateForm(formData);
@@ -166,8 +217,8 @@ export function ExpenseForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await toast.promise(addExpense(formData), {
-      loading: "Adding new entry...",
+    await toast.promise(formConfig?.handler(formData, selectedExpense?._id), {
+      loading: formConfig?.label.loading,
       success: (success) => {
         setFormData({
           ...formData,
@@ -175,6 +226,7 @@ export function ExpenseForm() {
           commerce: "",
           description: "",
         });
+        cancelForm && cancelForm();
         return success.message;
       },
       error: (error) => error.message,
@@ -184,7 +236,7 @@ export function ExpenseForm() {
   return (
     <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md text-lg">
       <div className="flex items-center gap-2">
-        <LuPlus /> Add expense
+        <LuPlus /> {formConfig?.title}
       </div>
       <form className="text-slate-200" onSubmit={handleSubmit}>
         <div className="flex flex-wrap">
@@ -221,14 +273,22 @@ export function ExpenseForm() {
             />
           ))}
         </div>
-        <div className="px-2 mt-2">
+        <div className="px-2 mt-2 flex flex-col gap-2">
           <button
             type="submit"
             disabled={!formIsValid}
             className="bg-cyan-500 text-slate-700 w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-cyan-400 disabled:bg-cyan-600"
           >
-            Add Expense
+            {formConfig?.label.submitButton}
           </button>
+          {cancelForm && (
+            <button
+              onClick={cancelForm}
+              className="text-slate-300 w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:text-slate-100"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
     </section>
