@@ -90,12 +90,37 @@ export function CategoriesProvider({ children }) {
     }
   }
 
+  function getCategoryName(categoryId) {
+    if (!categoryId) return;
+
+    const [category] = categories.filter(
+      (category) => category._id === categoryId
+    );
+
+    return category.name;
+  }
+
+  function getSubcategoryName(subcategoryId) {
+    if (!subcategoryId) return;
+
+    const subcategories = categories
+      .map((category) => category.subcategories)
+      .flat();
+    const [subcategory] = subcategories.filter(
+      (subcategory) => subcategory._id === subcategoryId
+    );
+
+    return subcategory.name;
+  }
+
   const value = {
     addCategory,
     deleteCategory,
     updateCategory,
     categories,
     defaultCategory,
+    getCategoryName,
+    getSubcategoryName,
   };
 
   return (

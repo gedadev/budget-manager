@@ -9,7 +9,8 @@ import { Link } from "react-router-dom";
 
 export function ExpenseForm() {
   const { addExpense } = useExpenses();
-  const { categories, defaultCategory } = useCategories();
+  const { categories, defaultCategory, getCategoryName, getSubcategoryName } =
+    useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
   const { formErrors, handleBlur, resetErrors, validateForm } =
     useFormValidations();
@@ -47,28 +48,29 @@ export function ExpenseForm() {
   const formSelectors = [
     {
       label: "Category",
-      name: "category",
+      name: "categoryId",
       managerRoute: "categories",
-      defaultValue: formData.category || "Create category",
+      defaultValue: getCategoryName(formData.categoryId) || "Create category",
       options: selectorsOptions.categories,
     },
     {
       label: "Subcategory",
-      name: "subcategory",
+      name: "subcategoryId",
       managerRoute: "categories",
-      defaultValue: formData.subcategory || "Add Subcategory",
+      defaultValue:
+        getSubcategoryName(formData.subcategoryId) || "Add Subcategory",
       options: selectorsOptions.subcategories,
     },
-    {
-      label: "Payment Method",
-      name: "method",
-      managerRoute: "",
-      defaultValue: formData.method || "Loading...",
-      options: [
-        { label: "💵 Cash", name: "cash" },
-        { label: "💳 Credit Card", name: "credit card" },
-      ],
-    },
+    // {
+    //   label: "Payment Method",
+    //   name: "method",
+    //   managerRoute: "",
+    //   defaultValue: formData.method || "Loading...",
+    //   options: [
+    //     { id: 1, label: "💵 Cash", name: "cash" },
+    //     { id: 2, label: "💳 Credit Card", name: "credit card" },
+    //   ],
+    // },
   ];
 
   useEffect(() => {
@@ -81,36 +83,38 @@ export function ExpenseForm() {
         date: formatDateInput(new Date(Date.now())),
         commerce: "",
         description: "",
-        method: "cash",
-        category: "",
-        subcategory: "",
+        // method: "cash",
+        categoryId: "",
+        subcategoryId: "",
       });
       return;
     }
 
     const categoryOptions = categories.map((category) => ({
+      id: category._id,
       label: `${category.emoji} ${category.name}`,
       name: category.name,
     }));
     const subcategoryOptions = defaultCategory.subcategories?.map(
       (subcategory) => ({
+        id: subcategory._id,
         label: subcategory.name,
         name: subcategory.name,
       })
     );
-
     setSelectorsOptions({
       categories: categoryOptions,
       subcategories: subcategoryOptions || [],
     });
+
     setFormData({
       amount: "0",
       date: formatDateInput(new Date(Date.now())),
       commerce: "",
       description: "",
-      method: "cash",
-      category: defaultCategory.name,
-      subcategory: defaultCategory.subcategories?.[0]?.name,
+      // method: "cash",
+      categoryId: defaultCategory._id,
+      subcategoryId: defaultCategory.subcategories?.[0]?._id,
     });
   }, [categories, defaultCategory]);
 
@@ -120,23 +124,19 @@ export function ExpenseForm() {
     setFormIsValid(isValid);
   }, [formData]);
 
-  const handleChange = (e, index) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     resetErrors();
 
-    if (name === "category" && typeof index === "number") {
-      const targetCategory = categories[index];
+    if (name === "categoryId") {
+      const [targetCategory] = categories.filter(
+        (category) => category._id === value
+      );
       const firstSubcategory = targetCategory.subcategories?.[0];
-
-      setFormData({
-        ...formData,
-        category: value,
-        subcategory: firstSubcategory?.name,
-      });
-
       const subcategoryOptions = targetCategory.subcategories?.map(
         (subcategory) => {
           return {
+            id: subcategory._id,
             label: subcategory.name,
             name: subcategory.name,
           };
@@ -146,6 +146,11 @@ export function ExpenseForm() {
       setSelectorsOptions({
         ...selectorsOptions,
         subcategories: subcategoryOptions || [],
+      });
+      setFormData({
+        ...formData,
+        categoryId: value,
+        subcategoryId: firstSubcategory?._id,
       });
 
       return;
@@ -165,13 +170,10 @@ export function ExpenseForm() {
       loading: "Adding new entry...",
       success: (success) => {
         setFormData({
+          ...formData,
           amount: "",
-          date: formatDateInput(new Date(Date.now())),
           commerce: "",
           description: "",
-          category: defaultCategory.name,
-          subcategory: defaultCategory.subcategories?.[0]?.name,
-          method: "cash",
         });
         return success.message;
       },
@@ -237,16 +239,13 @@ const FormSelector = ({ selector, handleChange }) => {
   const { formatLabel } = useFormatter();
   const [activeOptions, setActiveOptions] = useState(false);
 
-  const handleOption = (selector, option, index) => {
-    handleChange(
-      {
-        target: {
-          name: selector,
-          value: option,
-        },
+  const handleOption = (selector, optionId) => {
+    handleChange({
+      target: {
+        name: selector,
+        value: optionId,
       },
-      index
-    );
+    });
     setActiveOptions(!activeOptions);
   };
 
@@ -267,13 +266,13 @@ const FormSelector = ({ selector, handleChange }) => {
         } `}
         style={{ wordSpacing: "0.2rem" }}
       >
-        {selector.options?.map((option, i) => (
+        {selector.options?.map((option) => (
           <li
-            key={i}
+            key={option.id}
             className={`cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center gap-2 justify-between ${
               selector.defaultValue === option.name && "bg-purple-700"
             }`}
-            onClick={() => handleOption(selector.name, option.name, i)}
+            onClick={() => handleOption(selector.name, option.id)}
           >
             <span className="min-w-24">{option.label}</span>
             {selector.defaultValue === option.name && (
@@ -287,7 +286,7 @@ const FormSelector = ({ selector, handleChange }) => {
               "cursor-pointer py-1 px-2 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
             }
           >
-            Add {selector.name}
+            Add {selector.label}
           </li>
         </Link>
       </ul>
