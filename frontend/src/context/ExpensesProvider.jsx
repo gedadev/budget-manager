@@ -56,7 +56,32 @@ export function ExpensesProvider({ children }) {
     }
   }
 
-  const value = { addExpense, getExpenses, deleteExpense, expenses };
+  async function updateExpense(formData, expenseId) {
+    try {
+      const updatedExpense = await request(
+        `${endpoints.expenses.update}/${expenseId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (updatedExpense instanceof Error) throw updatedExpense;
+
+      getExpenses();
+      return updatedExpense;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const value = {
+    addExpense,
+    getExpenses,
+    deleteExpense,
+    updateExpense,
+    expenses,
+  };
 
   return (
     <ExpensesContext.Provider value={value}>
