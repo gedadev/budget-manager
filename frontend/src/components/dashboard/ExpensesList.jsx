@@ -43,6 +43,7 @@ export function ExpensesList() {
       </div>
 
       <div
+        id="modal-bg"
         className={`${
           activeModal
             ? "opacity-100 pointer-events-auto"

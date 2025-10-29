@@ -79,6 +79,27 @@ export function ExpenseForm({
   ];
 
   useEffect(() => {
+    if (!cancelForm) return;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") cancelForm();
+    };
+
+    const handleClick = (event) => {
+      const { id } = event.target;
+      if (id === "modal-bg") cancelForm();
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
+
+  useEffect(() => {
     if (formAction === "new") {
       setFormConfig({
         title: "Add Expense",
