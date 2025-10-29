@@ -6,7 +6,7 @@ import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
 
 export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
-  const { validateForm, handleBlur, formErrors } = useFormValidations();
+  const { validateForm, validateField, formErrors } = useFormValidations();
   const { addCategory, updateCategory } = useCategories();
   const subcategoriesInputRef = useRef(null);
   const [formIsValid, setFormIsValid] = useState();
@@ -99,9 +99,9 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
     const { name, value } = e.target;
 
     if (name === "name") {
-      const e = { target: { name: "categoryName", value } };
-      handleBlur(e);
+      validateField("categoryName", value);
     }
+
     setCategoryFormData({ ...categoryFormData, [name]: value });
   };
 
@@ -143,6 +143,12 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
     });
   };
 
+  const trimName = (e) => {
+    const { name, value } = e.target;
+
+    setCategoryFormData({ ...categoryFormData, [name]: value.trim() });
+  };
+
   return (
     <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4 mx-2">
       <h1 className="text-xl font-bold mb-2">{formConfig.title}</h1>
@@ -154,6 +160,7 @@ export function CategoryForm({ cancelForm, formAction, selectedCategory }) {
           name="name"
           value={categoryFormData.name}
           onChange={handleCategoryData}
+          onBlur={trimName}
           className="bg-slate-700 text-slate-300 p-1 rounded focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
         />
         {formErrors?.categoryName && (

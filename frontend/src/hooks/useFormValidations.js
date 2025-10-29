@@ -115,6 +115,7 @@ export function useFormValidations() {
 
   return {
     formErrors,
+    validateField,
     validateForm,
     resetErrors,
     handleBlur,
