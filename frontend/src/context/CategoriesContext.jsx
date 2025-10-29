@@ -91,7 +91,7 @@ export function CategoriesProvider({ children }) {
   }
 
   function getCategoryName(categoryId) {
-    if (!categoryId) return;
+    if (!categories || !categoryId) return;
 
     const [category] = categories.filter(
       (category) => category._id === categoryId
@@ -101,7 +101,7 @@ export function CategoriesProvider({ children }) {
   }
 
   function getSubcategoryName(subcategoryId) {
-    if (!subcategoryId) return;
+    if (!categories || !subcategoryId) return;
 
     const subcategories = categories
       .map((category) => category.subcategories)
