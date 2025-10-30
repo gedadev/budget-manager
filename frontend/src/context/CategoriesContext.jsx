@@ -53,10 +53,22 @@ export function CategoriesProvider({ children }) {
     }
   }
 
-  async function deleteCategory(categoryId) {
+  async function checkUsedCategory(categoryId) {
+    try {
+      const isUsed = await request(
+        `${endpoints.categories.update}/${categoryId}`
+      );
+
+      return isUsed;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function deleteCategory(categoryId, used) {
     try {
       const deleted = await request(
-        `${endpoints.categories.update}/${categoryId}`,
+        `${endpoints.categories.update}/${categoryId}?used=${used}`,
         {
           method: "DELETE",
         }
@@ -115,6 +127,7 @@ export function CategoriesProvider({ children }) {
 
   const value = {
     addCategory,
+    checkUsedCategory,
     deleteCategory,
     updateCategory,
     categories,

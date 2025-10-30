@@ -1,37 +1,61 @@
 import { useState } from "react";
 import { CategoryForm } from "./CategoryForm";
-import { LuPlus, LuSquarePen, LuTag, LuTrash2 } from "react-icons/lu";
+import {
+  LuPlus,
+  LuSquarePen,
+  LuTag,
+  LuTrash2,
+  LuTriangleAlert,
+} from "react-icons/lu";
 import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
 
 export function CategoriesList() {
-  const [activeModal, setActiveModal] = useState(false);
+  const [activeDeleteModal, setActiveDeleteModal] = useState();
+  const [usedCategory, setUsedCategory] = useState();
+  const [activeFormModal, setActiveFormModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { deleteCategory, categories } = useCategories();
+  const { checkUsedCategory, deleteCategory, categories } = useCategories();
 
   const cancelForm = () => {
-    setActiveModal(false);
+    setActiveFormModal(false);
+    setActiveDeleteModal(false);
   };
 
-  const handleDelete = async (categoryId) => {
-    await toast.promise(deleteCategory(categoryId), {
+  const handleDelete = async (categoryId, used) => {
+    await toast.promise(deleteCategory(categoryId, used), {
       loading: "Deleting category...",
-      success: (success) => success.message,
+      success: (success) => {
+        activeDeleteModal && setActiveDeleteModal(false);
+        return success.message;
+      },
       error: (error) => error.message,
     });
   };
 
-  const activateModalForNewCategory = () => {
-    setSelectedCategory(null);
-    setFormAction("new");
-    setActiveModal(true);
+  const handleDeleteModal = async (category) => {
+    const { used, count } = await checkUsedCategory(category._id);
+
+    if (!used) {
+      handleDelete(category._id, used);
+      return;
+    }
+    setSelectedCategory(category);
+    setUsedCategory({ used, count });
+    setActiveDeleteModal(true);
   };
 
-  const activateModalForEditCategory = (category) => {
+  const handleAddModal = () => {
+    setSelectedCategory(null);
+    setFormAction("new");
+    setActiveFormModal(true);
+  };
+
+  const handleEditModal = (category) => {
     setSelectedCategory(category);
     setFormAction("edit");
-    setActiveModal(true);
+    setActiveFormModal(true);
   };
 
   return (
@@ -65,18 +89,18 @@ export function CategoriesList() {
           </div>
           <div className="absolute top-0 right-0 m-3 flex gap-2">
             <LuSquarePen
-              onClick={() => activateModalForEditCategory(category)}
+              onClick={() => handleEditModal(category)}
               className="text-cyan-500 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
             />
             <LuTrash2
-              onClick={() => handleDelete(category._id)}
+              onClick={() => handleDeleteModal(category)}
               className="text-red-400 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
             />
           </div>
         </div>
       ))}
       <div
-        onClick={activateModalForNewCategory}
+        onClick={handleAddModal}
         className="flex flex-col items-center justify-center gap-1 cursor-pointer w-full h-full bg-slate-700 rounded min-h-40 border-2 border-slate-500 hover:border-cyan-600 transition-all duration-300 ease-in-out"
       >
         <button className="text-2xl text-cyan-500">
@@ -88,12 +112,12 @@ export function CategoriesList() {
       <div
         id="modal-bg"
         className={`${
-          activeModal
+          activeFormModal
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
       >
-        {activeModal && (
+        {activeFormModal && (
           <CategoryForm
             cancelForm={cancelForm}
             formAction={formAction}
@@ -101,6 +125,56 @@ export function CategoriesList() {
           />
         )}
       </div>
+      <div
+        id="modal-bg"
+        className={`${
+          activeDeleteModal
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
+      >
+        {activeDeleteModal && (
+          <DeleteDialog
+            usedCategory={usedCategory}
+            selectedCategory={selectedCategory}
+            handleDelete={handleDelete}
+            cancelForm={cancelForm}
+          />
+        )}
+      </div>
     </section>
   );
 }
+
+const DeleteDialog = ({
+  usedCategory,
+  selectedCategory,
+  handleDelete,
+  cancelForm,
+}) => {
+  return (
+    <div className="max-w-md p-4 border rounded-md border-slate-600 bg-slate-800 flex flex-col gap-4 mx-2">
+      <h3 className="flex items-center gap-2 text-red-500">
+        <LuTriangleAlert /> Warning
+      </h3>
+      <span className="text-sm">
+        This category is used in {usedCategory.count} expenses. It will be
+        hidden from future entries but still visible in expenses. Continue?
+      </span>
+      <div className="flex justify-end gap-4">
+        <button
+          className="p-1 rounded-md hover:bg-slate-700 transition duration-200 ease-in-out"
+          onClick={cancelForm}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-red-500 p-1 rounded-md hover:bg-red-600 transition duration-200 ease-in-out"
+          onClick={() => handleDelete(selectedCategory._id, usedCategory.used)}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
