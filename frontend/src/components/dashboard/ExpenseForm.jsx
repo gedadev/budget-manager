@@ -13,8 +13,12 @@ export function ExpenseForm({
   selectedExpense,
 }) {
   const { addExpense, updateExpense } = useExpenses();
-  const { categories, defaultCategory, getCategoryName, getSubcategoryName } =
-    useCategories();
+  const {
+    activeCategories,
+    defaultCategory,
+    getCategoryName,
+    getSubcategoryName,
+  } = useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
   const { formErrors, handleBlur, resetErrors, validateForm } =
     useFormValidations();
@@ -148,9 +152,9 @@ export function ExpenseForm({
   }, []);
 
   useEffect(() => {
-    if (!categories || !defaultCategory) return;
+    if (!activeCategories || !defaultCategory) return;
 
-    if (categories.length === 0) {
+    if (activeCategories.length === 0) {
       setSelectorsOptions({ categories: [], subcategories: [] });
       setFormData({
         amount: "0",
@@ -164,7 +168,7 @@ export function ExpenseForm({
       return;
     }
 
-    const categoryOptions = categories.map((category) => ({
+    const categoryOptions = activeCategories.map((category) => ({
       id: category._id,
       label: `${category.emoji} ${category.name}`,
       name: category.name,
@@ -191,7 +195,7 @@ export function ExpenseForm({
         categoryId: defaultCategory._id,
         subcategoryId: defaultCategory.subcategories?.[0]?._id,
       });
-  }, [categories, defaultCategory, selectedExpense]);
+  }, [activeCategories, defaultCategory, selectedExpense]);
 
   useEffect(() => {
     const isValid = validateForm(formData);
@@ -211,7 +215,7 @@ export function ExpenseForm({
     resetErrors();
 
     if (name === "categoryId") {
-      const [targetCategory] = categories.filter(
+      const [targetCategory] = activeCategories.filter(
         (category) => category._id === value
       );
       const firstSubcategory = targetCategory.subcategories?.[0];

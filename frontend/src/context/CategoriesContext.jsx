@@ -6,6 +6,7 @@ export const CategoriesContext = createContext(null);
 export function CategoriesProvider({ children }) {
   const { request, endpoints } = useApi();
   const [categories, setCategories] = useState();
+  const [activeCategories, setActiveCategories] = useState();
   const [defaultCategory, setDefaultCategory] = useState();
 
   useEffect(() => {
@@ -13,17 +14,19 @@ export function CategoriesProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (!categories) return;
+    if (!activeCategories) return;
 
-    if (categories.length === 0) {
+    if (activeCategories.length === 0) {
       setDefaultCategory({});
       return;
     }
 
-    const firstCategory = categories[0];
-    const foundDefault = categories.filter((category) => category.default);
+    const firstCategory = activeCategories[0];
+    const foundDefault = activeCategories.filter(
+      (category) => category.default
+    );
     setDefaultCategory(foundDefault._id ? foundDefault : firstCategory);
-  }, [categories]);
+  }, [activeCategories]);
 
   async function addCategory(formData) {
     try {
@@ -47,7 +50,11 @@ export function CategoriesProvider({ children }) {
 
       if (categories instanceof Error) throw categories;
 
+      const activeCategories = categories.filter(
+        (category) => !category.deleted
+      );
       setCategories(categories);
+      setActiveCategories(activeCategories);
     } catch (error) {
       throw error;
     }
@@ -130,7 +137,7 @@ export function CategoriesProvider({ children }) {
     checkUsedCategory,
     deleteCategory,
     updateCategory,
-    categories,
+    activeCategories,
     defaultCategory,
     getCategoryName,
     getSubcategoryName,

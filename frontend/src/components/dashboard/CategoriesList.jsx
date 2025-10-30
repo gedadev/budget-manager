@@ -16,7 +16,8 @@ export function CategoriesList() {
   const [activeFormModal, setActiveFormModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { checkUsedCategory, deleteCategory, categories } = useCategories();
+  const { checkUsedCategory, deleteCategory, activeCategories } =
+    useCategories();
 
   const cancelForm = () => {
     setActiveFormModal(false);
@@ -60,7 +61,7 @@ export function CategoriesList() {
 
   return (
     <section className="w-full grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {categories?.map((category) => (
+      {activeCategories?.map((category) => (
         <div
           key={category._id}
           className={
