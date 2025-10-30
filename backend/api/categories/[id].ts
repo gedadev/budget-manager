@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { authUser } from "../../middleware/authUser";
 import { getDb } from "../../lib/db";
 import { ObjectId } from "mongodb";
+import { count } from "console";
 
 interface CategoryBody {
   name: string;
@@ -14,7 +15,35 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   const { userId } = req.body;
   const { id } = req.query;
 
+  if (req.method === "GET") {
+    const db = await getDb();
+    const expensesCollection = db.collection("expenses");
+    const usersCollection = db.collection("users");
+
+    const foundUser = await usersCollection.findOne({
+      _id: ObjectId.createFromHexString(userId),
+    });
+
+    if (!foundUser) throw new Error("User not found");
+
+    const userExpenses = await expensesCollection
+      .find({
+        userId,
+      })
+      .toArray();
+
+    const foundExpenses = userExpenses.filter(
+      (expense) => expense.categoryId === id
+    );
+
+    return res
+      .status(200)
+      .json({ used: foundExpenses.length > 0, count: foundExpenses.length });
+  }
+
   if (req.method === "DELETE") {
+    const used = req.query.used === "true";
+
     try {
       const db = await getDb();
       const categoriesCollection = db.collection("categories");
@@ -27,13 +56,35 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (!foundUser) throw new Error("User not found");
 
-      await categoriesCollection.deleteOne({
-        _id: ObjectId.createFromHexString(id as string),
-      });
+      if (!used) {
+        await categoriesCollection.deleteOne({
+          _id: ObjectId.createFromHexString(id as string),
+        });
 
-      await subcategoriesCollection.deleteMany({
-        categoryId: id,
-      });
+        await subcategoriesCollection.deleteMany({
+          categoryId: id,
+        });
+
+        return res.status(200).json({ message: "Category removed" });
+      }
+
+      await categoriesCollection.updateOne(
+        { _id: ObjectId.createFromHexString(id as string) },
+        {
+          $set: {
+            deleted: true,
+          },
+        }
+      );
+
+      await subcategoriesCollection.updateMany(
+        { categoryId: id },
+        {
+          $set: {
+            deleted: true,
+          },
+        }
+      );
 
       return res.status(200).json({ message: "Category deleted" });
     } catch (error) {
