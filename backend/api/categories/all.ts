@@ -21,7 +21,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!foundUser) throw new Error("User not found");
 
-    const categories = await categoriesCollection
+    const categoriesData = await categoriesCollection
       .aggregate([
         {
           $match: {
@@ -47,7 +47,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
       ])
       .toArray();
 
-    res.status(201).json(categories);
+    res.status(201).json({ categoriesData });
   } catch (error) {
     if (error instanceof Error)
       return res.status(400).json({ error: error.message });
