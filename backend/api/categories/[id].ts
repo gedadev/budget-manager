@@ -128,16 +128,24 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           })
           .toArray();
 
-        const currentSubcategoryNames = currentSubcategories.map(
-          (subcategory) => subcategory.name
+        const inactiveSubcategories = currentSubcategories.filter(
+          (subcategory) => subcategory.deleted
         );
 
         const newSubcategories = subcategories.filter(
-          (subcategory) => !currentSubcategoryNames.includes(subcategory)
+          (subcategory) =>
+            !currentSubcategories
+              .map((subcategory) => subcategory.name)
+              .includes(subcategory)
         );
 
         const removedSubcategories = currentSubcategories.filter(
-          (subcategory) => !subcategories.includes(subcategory.name)
+          (subcategory) =>
+            !subcategories.includes(subcategory.name) && !subcategory.deleted
+        );
+
+        const restoredSubcategories = inactiveSubcategories.filter(
+          (subcategory) => subcategories.includes(subcategory.name)
         );
 
         if (newSubcategories.length > 0) {
@@ -161,6 +169,24 @@ async function handler(req: VercelRequest, res: VercelResponse) {
             {
               $set: {
                 deleted: true,
+              },
+            }
+          );
+        }
+
+        if (restoredSubcategories.length > 0) {
+          const restoredIds = restoredSubcategories.map(
+            (subcategory) => subcategory._id
+          );
+          await subcategoriesCollection.updateMany(
+            {
+              _id: {
+                $in: restoredIds,
+              },
+            },
+            {
+              $set: {
+                deleted: false,
               },
             }
           );
