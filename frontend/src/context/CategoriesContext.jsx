@@ -46,15 +46,30 @@ export function CategoriesProvider({ children }) {
 
   async function getCategories() {
     try {
-      const categories = await request(endpoints.categories.all);
+      const { categoriesData } = await request(endpoints.categories.all);
 
-      if (categories instanceof Error) throw categories;
+      if (categoriesData instanceof Error) throw categoriesData;
 
-      const activeCategories = categories.filter(
-        (category) => !category.deleted
+      setCategories(categoriesData);
+
+      const activeCategories = categoriesData
+        .filter((category) => !category.deleted)
+        .map((category) => ({ ...category }));
+
+      const activeCategoriesWithActiveSubs = activeCategories.filter(
+        (category) => {
+          const activeSubcategories = category.subcategories?.filter(
+            (subcategory) => !subcategory.deleted
+          );
+          category.subcategories = activeSubcategories
+            ? [...activeSubcategories]
+            : [];
+
+          return true;
+        }
       );
-      setCategories(categories);
-      setActiveCategories(activeCategories);
+
+      setActiveCategories(activeCategoriesWithActiveSubs);
     } catch (error) {
       throw error;
     }
