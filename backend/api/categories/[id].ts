@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { authUser } from "../../middleware/authUser";
 import { getDb } from "../../lib/db";
 import { ObjectId } from "mongodb";
-import { count } from "console";
 
 interface CategoryBody {
   name: string;
@@ -137,8 +136,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
           (subcategory) => !currentSubcategoryNames.includes(subcategory)
         );
 
-        const removedSubcategories = currentSubcategoryNames.filter(
-          (subcategory) => !subcategories.includes(subcategory)
+        const removedSubcategories = currentSubcategories.filter(
+          (subcategory) => !subcategories.includes(subcategory.name)
         );
 
         if (newSubcategories.length > 0) {
@@ -150,13 +149,25 @@ async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         if (removedSubcategories.length > 0) {
-          await subcategoriesCollection.deleteMany({
-            name: { $in: removedSubcategories },
-          });
+          const removedIds = removedSubcategories.map(
+            (subcategory) => subcategory._id
+          );
+          await subcategoriesCollection.updateMany(
+            {
+              _id: {
+                $in: removedIds,
+              },
+            },
+            {
+              $set: {
+                deleted: true,
+              },
+            }
+          );
         }
       }
 
-      return res.status(200).json({ message: "Category updated" });
+      return res.status(200).json({ message: "Category data updated" });
     } catch (error) {
       if (error instanceof Error)
         return res.status(400).json({ error: error.message });
