@@ -286,7 +286,7 @@ export function ExpenseForm({
                 id={input.name}
                 name={input.name}
                 placeholder={input.placeholder}
-                value={input.value}
+                value={input.value || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="bg-slate-700 rounded-md p-2 text-sm focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
