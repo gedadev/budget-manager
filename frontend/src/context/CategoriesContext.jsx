@@ -130,24 +130,18 @@ export function CategoriesProvider({ children }) {
     }
   }
 
-  function getCategoryName(categoryId) {
-    if (!categories || !categoryId) return;
+  function getCategoryName(id, isSubcategory) {
+    if (!categories || !subcategories || !id) return;
 
-    const [category] = categories.filter(
-      (category) => category._id === categoryId
-    );
+    if (isSubcategory) {
+      const [subcategory] = subcategories.filter(
+        (subcategory) => subcategory._id === id
+      );
+      return subcategory.name;
+    }
 
+    const [category] = categories.filter((category) => category._id === id);
     return category.name;
-  }
-
-  function getSubcategoryName(subcategoryId) {
-    if (!subcategories || !subcategoryId) return;
-
-    const [subcategory] = subcategories.filter(
-      (subcategory) => subcategory._id === subcategoryId
-    );
-
-    return subcategory.name;
   }
 
   function checkActiveCategory(id, isSubcategory) {
@@ -172,7 +166,6 @@ export function CategoriesProvider({ children }) {
     activeCategories,
     defaultCategory,
     getCategoryName,
-    getSubcategoryName,
     checkActiveCategory,
   };
 

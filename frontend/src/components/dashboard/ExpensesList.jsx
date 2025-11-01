@@ -103,7 +103,7 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
                   "line-through"
                 }`}
               >
-                {getSubcategoryName(expense.subcategoryId)}
+                {getCategoryName(expense.subcategoryId, true)}
               </span>
             </>
           )}

@@ -68,7 +68,7 @@ export function ExpenseForm({
       name: "subcategoryId",
       managerRoute: "categories",
       defaultValue:
-        getSubcategoryName(formData.subcategoryId) || "Add Subcategory",
+        getCategoryName(formData.subcategoryId, true) || "Add Subcategory",
       options: selectorsOptions.subcategories,
     },
     // {
