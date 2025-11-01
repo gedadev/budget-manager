@@ -64,7 +64,8 @@ export function ExpensesList() {
 
 const ExpenseItem = ({ expense, handleEditModal }) => {
   const { deleteExpense } = useExpenses();
-  const { getCategoryName, getSubcategoryName } = useCategories();
+  const { getCategoryName, getSubcategoryName, checkActiveCategory } =
+    useCategories();
   const { formatDate, formatCurrency } = useFormatter();
 
   const getDate = (dateInput) => {
@@ -86,11 +87,24 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
       <div>
         <h3>{expense.description}</h3>
         <div className="flex items-center gap-1 text-sm text-slate-400">
-          <span>{getCategoryName(expense.categoryId)}</span>
+          <span
+            className={`${
+              !checkActiveCategory(expense.categoryId) && "line-through"
+            }`}
+          >
+            {getCategoryName(expense.categoryId)}
+          </span>
           {expense.subcategoryId && (
             <>
               <LuChevronRight />
-              <span>{getSubcategoryName(expense.subcategoryId)}</span>
+              <span
+                className={`${
+                  !checkActiveCategory(expense.subcategoryId, true) &&
+                  "line-through"
+                }`}
+              >
+                {getSubcategoryName(expense.subcategoryId)}
+              </span>
             </>
           )}
           <LuDot />
