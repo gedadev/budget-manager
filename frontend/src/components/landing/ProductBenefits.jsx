@@ -32,8 +32,8 @@ export function ProductBenefits({ productBranding }) {
               Why Choose {productBranding.name}?
             </h1>
             <ul className="flex flex-col gap-2">
-              {productBranding.benefits.map((item) => (
-                <span className="flex gap-2 text-slate-400">
+              {productBranding.benefits.map((item, i) => (
+                <span key={i} className="flex gap-2 text-slate-400">
                   <LuCheck className="text-cyan-500 mt-1" /> {item}
                 </span>
               ))}
@@ -77,8 +77,8 @@ export function ProductBenefits({ productBranding }) {
               Why Choose {productBranding.name}?
             </h1>
             <ul className="flex flex-col gap-4">
-              {productBranding.benefits.map((item) => (
-                <span className="flex gap-2 text-slate-400">
+              {productBranding.benefits.map((item, i) => (
+                <span key={i} className="flex gap-2 text-slate-400">
                   <LuCheck className="text-cyan-500 mt-1" /> {item}
                 </span>
               ))}
