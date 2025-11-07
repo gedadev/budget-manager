@@ -1,68 +1,12 @@
-import {
-  LuArrowRight,
-  LuBrain,
-  LuChartColumn,
-  LuEye,
-  LuReceiptText,
-  LuTarget,
-  LuWallet,
-  LuWalletMinimal,
-} from "react-icons/lu";
+import { LuArrowRight } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import { ProductFeatures } from "./ProductFeatures";
 import { ProductBenefits } from "./ProductBenefits";
-
-const productBranding = {
-  name: "ExpenseTrack",
-  img: <LuWalletMinimal />,
-  benefits: [
-    "Spend less time managing finances, more time living your life",
-    "Never exceed your budget with smart alerts and comparisons",
-    "Visualize your spending patterns with beautiful charts",
-    "All your data stays private and secure locally",
-    "Works seamlessly on any device, anywhere",
-  ],
-  features: [
-    {
-      icon: <LuReceiptText />,
-      title: "Quick Entry",
-      description:
-        "Log expenses in seconds with an intuitive form designed for speed",
-    },
-    {
-      icon: <LuTarget />,
-      title: "Smart Categories",
-      description: "Organize expenses with custom categories and subcategories",
-    },
-    {
-      icon: <LuWallet />,
-      title: "Budget Planning",
-      description:
-        "Set budgets for each category and track against your spending",
-    },
-    {
-      icon: <LuChartColumn />,
-      title: "Visual Analytics",
-      description:
-        "See spending patterns with interactive charts and detailed insights",
-    },
-    {
-      icon: <LuEye />,
-      title: "Payment Tracking",
-      description: "Track expenses by payment method including cash and cards",
-    },
-    {
-      icon: <LuBrain />,
-      title: "Smart Insights",
-      description:
-        "Understand your spending habits with AI-powered recommendations",
-    },
-  ],
-};
+import { productBranding } from "../../utils/branding";
 
 export const Hero = () => {
   return (
-    <div className="h-screen bg-slate-900">
+    <div className="h-screen bg-slate-950">
       <div className="h-full max-w-xl m-auto text-center flex flex-col items-center justify-center gap-6">
         <h1 className="text-slate-100 text-5xl md:text-6xl font-bold">
           Master Your Finances With Ease
@@ -102,7 +46,7 @@ export const Benefits = () => {
 
 export const CTA = () => {
   return (
-    <div className="h-screen bg-slate-950 flex items-center justify-center relative">
+    <div className="h-screen bg-slate-900 flex items-center justify-center relative">
       <div className="flex flex-col gap-4 items-center text-center">
         <h2 className="text-slate-200 text-5xl font-bold">
           Ready to Take Control?
