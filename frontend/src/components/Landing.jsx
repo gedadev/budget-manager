@@ -11,6 +11,7 @@ import {
 } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import { ProductFeatures } from "./landing/ProductFeatures";
+import { ProductBenefits } from "./landing/ProductBenefits";
 
 const productBranding = {
   name: "ExpenseTrack",
@@ -95,44 +96,7 @@ export const Features = () => {
 export const Benefits = () => {
   return (
     <div className="h-screen bg-slate-900 flex items-center justify-center">
-      <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-4">
-        <div>
-          <h1 className="text-slate-100 text-4xl font-semibold my-6">
-            Why Choose {productBranding.name}?
-          </h1>
-          <ul className="flex flex-col gap-4">
-            {productBranding.benefits.map((item) => (
-              <span className="flex gap-2 text-slate-400">
-                <LuCheck className="text-cyan-500 mt-1" /> {item}
-              </span>
-            ))}
-          </ul>
-        </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-md p-8">
-          <span className="text-cyan-500 text-sm">QUICK STATS</span>
-          <h3 className="text-slate-300 text-lg font-semibold">
-            Track Your Progress
-          </h3>
-          <div className="mt-4">
-            <div className="flex justify-between py-4 border-b border-slate-500">
-              <span className="text-slate-400">Expenses Tracked</span>
-              <span className="text-cyan-500">1000+</span>
-            </div>
-            <div className="flex justify-between py-4 border-b border-slate-500">
-              <span className="text-slate-400">Categories</span>
-              <span className="text-cyan-500">Unlimited</span>
-            </div>
-            <div className="flex justify-between py-4 border-b border-slate-500">
-              <span className="text-slate-400">Budget Types</span>
-              <span className="text-cyan-500">3 Options</span>
-            </div>
-            <div className="flex justify-between py-4">
-              <span className="text-slate-400">Payment Methods</span>
-              <span className="text-cyan-500">5+ Types</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProductBenefits productBranding={productBranding} />
     </div>
   );
 };
