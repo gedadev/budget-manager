@@ -2,7 +2,6 @@ import {
   LuArrowRight,
   LuBrain,
   LuChartColumn,
-  LuCheck,
   LuEye,
   LuReceiptText,
   LuTarget,
@@ -10,8 +9,8 @@ import {
   LuWalletMinimal,
 } from "react-icons/lu";
 import { Link } from "react-router-dom";
-import { ProductFeatures } from "./landing/ProductFeatures";
-import { ProductBenefits } from "./landing/ProductBenefits";
+import { ProductFeatures } from "./ProductFeatures";
+import { ProductBenefits } from "./ProductBenefits";
 
 const productBranding = {
   name: "ExpenseTrack",
@@ -104,7 +103,7 @@ export const Benefits = () => {
 export const CTA = () => {
   return (
     <div className="h-screen bg-slate-950 flex items-center justify-center relative">
-      <div className="flex flex-col gap-4 items-center">
+      <div className="flex flex-col gap-4 items-center text-center">
         <h2 className="text-slate-200 text-5xl font-bold">
           Ready to Take Control?
         </h2>
@@ -116,7 +115,7 @@ export const CTA = () => {
           Sign In <LuArrowRight />
         </button>
       </div>
-      <div className="absolute bottom-0 w-full px-10 py-5 flex justify-between border-t border-slate-700 text-sm">
+      <div className="absolute bottom-0 w-full px-4 py-2 text-xs sm:px-10 sm:py-5 sm:text-sm flex flex-col gap-1 sm:flex-row items-center justify-between border-t border-slate-700">
         <span className="text-slate-500">{`${productBranding.name} © 2025. All right reserved.`}</span>
         <ul className="text-slate-500 flex gap-4">
           <Link>
