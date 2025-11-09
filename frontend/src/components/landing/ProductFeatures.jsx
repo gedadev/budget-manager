@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import { useScreen } from "../../hooks/useScreen";
 import { LuCircle, LuCircleDot } from "react-icons/lu";
 
@@ -48,7 +48,7 @@ export function ProductFeatures({ features }) {
           </div>
           <div className="flex gap-2 text-slate-500 text-xs mt-4">
             {features.map((_, index) => (
-              <>
+              <Fragment key={index}>
                 {index === currentFeatureIndex ? (
                   <LuCircleDot />
                 ) : (
@@ -57,7 +57,7 @@ export function ProductFeatures({ features }) {
                     onClick={() => setCurrentFeatureIndex(index)}
                   />
                 )}
-              </>
+              </Fragment>
             ))}
           </div>
         </>
