@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ExpensesProvider } from "../context/ExpensesProvider";
+import { ExpensesProvider } from "../context/ExpensesContext";
 import { CategoriesProvider } from "../context/CategoriesContext";
 
 export function Dashboard() {

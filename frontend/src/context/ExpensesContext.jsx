@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useApi } from "../hooks/useApi";
-import { ExpensesContext } from "./ExpensesContext";
+
+export const ExpensesContext = createContext(null);
 
 export function ExpensesProvider({ children }) {
   const { request, endpoints } = useApi();
