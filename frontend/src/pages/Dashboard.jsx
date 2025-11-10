@@ -11,10 +11,11 @@ export function Dashboard() {
   useEffect(() => {
     const findUser = async () => {
       const { success } = await getUserData();
-      return success;
+
+      if (!success) navigate("/auth");
     };
 
-    if (!findUser()) navigate("/auth");
+    findUser();
   }, []);
 
   return (

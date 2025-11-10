@@ -2,9 +2,22 @@ import { useAuth } from "../hooks/useAuth";
 import { LoginForm } from "../components/auth/LoginForm";
 import { SignupForm } from "../components/auth/SignupForm";
 import { EmailForm } from "../components/auth/EmailForm";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export function Auth() {
-  const { foundUser } = useAuth();
+  const { foundUser, getUserData } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const findUser = async () => {
+      const { success } = await getUserData();
+
+      if (success) navigate("/dashboard");
+    };
+
+    findUser();
+  }, []);
 
   return (
     <main className="flex items-center justify-center h-screen">
