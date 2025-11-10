@@ -1,7 +1,8 @@
 import { useCallback } from "react";
 
 const API_CONFIG = {
-  baseUrl: "/api",
+  // baseUrl: "/api",
+  baseUrl: "https://budget-manager-henna.vercel.app/api",
   endpoints: {
     auth: {
       check: "/auth/check-email",
