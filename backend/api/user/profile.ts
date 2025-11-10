@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { authUser } from "../../middleware/authUser";
 import { getDb } from "../../lib/db";
 import { ObjectId } from "mongodb";
+import { withCors } from "../../middleware/withCors";
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   const { userId } = req.body;
@@ -26,4 +27,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-export default authUser(handler);
+export default withCors(authUser(handler));

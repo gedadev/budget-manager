@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "../../lib/db";
 import { authUser } from "../../middleware/authUser";
 import { ObjectId } from "mongodb";
+import { withCors } from "../../middleware/withCors";
 
 interface NewExpenseBody {
   amount: string;
@@ -59,4 +60,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-export default authUser(handler);
+export default withCors(authUser(handler));

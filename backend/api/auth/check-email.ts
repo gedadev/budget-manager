@@ -1,15 +1,16 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getDb } from "../../lib/db";
+import { withCors } from "../../middleware/withCors";
 
 interface ReqBody {
   email: string;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-
+  console.log(req.body);
   const { email } = req.body as ReqBody;
 
   try {
@@ -23,3 +24,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export default withCors(handler);

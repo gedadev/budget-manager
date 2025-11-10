@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { authUser } from "../../middleware/authUser";
 import { getDb } from "../../lib/db";
 import { ObjectId } from "mongodb";
+import { withCors } from "../../middleware/withCors";
 
 interface CategoryBody {
   name: string;
@@ -204,4 +205,4 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   res.end();
 }
 
-export default authUser(handler);
+export default withCors(authUser(handler));

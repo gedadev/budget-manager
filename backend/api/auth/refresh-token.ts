@@ -2,8 +2,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { parse } from "cookie";
 import { getDb } from "../../lib/db";
 import { generateTokens, hashToken } from "../../lib/auth";
+import { withCors } from "../../middleware/withCors";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   const rawCookieHeader = req.headers.cookie;
 
   try {
@@ -58,3 +59,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export default withCors(handler);
