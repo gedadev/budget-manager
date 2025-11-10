@@ -2,6 +2,7 @@ import { LuArrowRight, LuMenu, LuX } from "react-icons/lu";
 import { productBranding } from "../../utils/branding";
 import { useScreen } from "../../hooks/useScreen";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function Header() {
   const { isMobile } = useScreen();
@@ -82,9 +83,11 @@ export function Header() {
               </button>
             </li>
             <li>
-              <button className="bg-cyan-500 text-slate-800 font-semibold py-1 px-2 rounded-md flex items-center gap-1 hover:bg-cyan-400 transition-all duration-150">
-                Sign Up Now! <LuArrowRight />
-              </button>
+              <Link to={"auth"}>
+                <button className="bg-cyan-500 text-slate-800 font-semibold py-1 px-2 rounded-md flex items-center gap-1 hover:bg-cyan-400 transition-all duration-150">
+                  Sign Up Now! <LuArrowRight />
+                </button>
+              </Link>
             </li>
           </ul>
         </div>
