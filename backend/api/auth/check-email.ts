@@ -10,7 +10,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  console.log(req.body);
+
   const { email } = req.body as ReqBody;
 
   try {
