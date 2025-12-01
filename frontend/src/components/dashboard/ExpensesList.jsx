@@ -1,6 +1,7 @@
 import {
   LuChevronRight,
   LuDot,
+  LuFilter,
   LuReceipt,
   LuSquarePen,
   LuTrash2,
@@ -11,6 +12,7 @@ import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { ExpenseForm } from "./ExpenseForm";
+import { ExpensesFilters } from "./ExpensesFilters";
 
 export function ExpensesList() {
   const { expenses, orderBy } = useExpenses();
@@ -18,12 +20,14 @@ export function ExpensesList() {
   const [formAction, setFormAction] = useState("");
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [orderedExpenses, setOrderedExpenses] = useState([]);
+  const [activeFilters, setActiveFilters] = useState(false);
 
   useEffect(() => {
     setOrderedExpenses(orderBy(expenses, "date-desc"));
   }, [expenses]);
 
   const cancelForm = () => setActiveModal(false);
+  const cancelFilters = () => setActiveFilters(false);
 
   const handleEditModal = (expense) => {
     setActiveModal(true);
@@ -33,7 +37,13 @@ export function ExpensesList() {
 
   return (
     <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md mt-4">
-      <div>
+      <div className="flex items-center gap-4">
+        <div>
+          <LuFilter
+            className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+            onClick={() => setActiveFilters(!activeFilters)}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <label htmlFor="orderBy">Order by:</label>
           <select
@@ -82,6 +92,16 @@ export function ExpensesList() {
             selectedExpense={selectedExpense}
           />
         )}
+      </div>
+      <div
+        id="filters-bg"
+        className={`${
+          activeFilters
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
+      >
+        {activeFilters && <ExpensesFilters cancelForm={cancelFilters} />}
       </div>
     </section>
   );
