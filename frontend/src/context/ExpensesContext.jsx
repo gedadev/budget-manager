@@ -8,6 +8,8 @@ export function ExpensesProvider({ children }) {
   const { request, endpoints } = useApi();
   const { getCategoryName } = useCategories();
   const [expenses, setExpenses] = useState([]);
+  const [commerceList, setCommerceList] = useState([]);
+  const [descriptionList, setDescriptionList] = useState([]);
 
   useEffect(() => {
     getExpenses();
@@ -36,6 +38,12 @@ export function ExpensesProvider({ children }) {
       if (expensesData instanceof Error) throw expensesData;
 
       setExpenses([...expensesData]);
+      setCommerceList([
+        ...new Set(expensesData.map((expense) => expense.commerce)),
+      ]);
+      setDescriptionList([
+        ...new Set(expensesData.map((expense) => expense.description)),
+      ]);
     } catch (error) {
       throw error;
     }
@@ -115,6 +123,8 @@ export function ExpensesProvider({ children }) {
     updateExpense,
     expenses,
     orderBy,
+    commerceList,
+    descriptionList,
   };
 
   return (
