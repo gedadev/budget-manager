@@ -9,14 +9,19 @@ import { useExpenses } from "../../hooks/useExpenses";
 import { useFormatter } from "../../hooks/useFormatter";
 import { useCategories } from "../../hooks/useCategories";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpenseForm } from "./ExpenseForm";
 
 export function ExpensesList() {
-  const { expenses } = useExpenses();
+  const { expenses, orderBy } = useExpenses();
   const [activeModal, setActiveModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedExpense, setSelectedExpense] = useState(null);
+  const [orderedExpenses, setOrderedExpenses] = useState([]);
+
+  useEffect(() => {
+    setOrderedExpenses(orderBy(expenses, "date-desc"));
+  }, [expenses]);
 
   const cancelForm = () => setActiveModal(false);
 
@@ -28,12 +33,32 @@ export function ExpensesList() {
 
   return (
     <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md mt-4">
+      <div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="orderBy">Order by:</label>
+          <select
+            name="orderBy"
+            id="orderBy"
+            className="rounded-md border border-slate-600 p-2 text-slate-300 bg-transparent focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
+            onChange={(e) =>
+              setOrderedExpenses(orderBy(expenses, e.target.value))
+            }
+          >
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="amount-desc">Amount: High to Low</option>
+            <option value="amount-asc">Amount: Low to High</option>
+            <option value="commerce">Commerce</option>
+            <option value="category">Category</option>
+          </select>
+        </div>
+      </div>
       <h2 className="flex items-center gap-2 my-4 text-xl">
         <LuReceipt />
         Recent Expenses
       </h2>
       <div className="flex flex-col gap-2">
-        {expenses.map((expense) => (
+        {orderedExpenses.map((expense) => (
           <ExpenseItem
             key={expense._id}
             expense={expense}
@@ -64,8 +89,7 @@ export function ExpensesList() {
 
 const ExpenseItem = ({ expense, handleEditModal }) => {
   const { deleteExpense } = useExpenses();
-  const { getCategoryName, getSubcategoryName, checkActiveCategory } =
-    useCategories();
+  const { getCategoryName, checkActiveCategory } = useCategories();
   const { formatDate, formatCurrency } = useFormatter();
 
   const getDate = (dateInput) => {
@@ -85,7 +109,11 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
   return (
     <div className="w-full flex justify-between rounded-md border border-slate-600 p-3">
       <div>
-        <h3>{expense.description}</h3>
+        <div className="flex items-center gap-2">
+          <span>{expense.commerce}</span>
+          <LuChevronRight />
+          <span>{expense.description}</span>
+        </div>
         <div className="flex items-center gap-1 text-sm text-slate-400">
           <span
             className={`${
