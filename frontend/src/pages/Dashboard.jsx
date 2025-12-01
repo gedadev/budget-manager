@@ -21,13 +21,13 @@ export function Dashboard() {
   return (
     <div className="bg-slate-900 text-slate-50 min-h-screen">
       {isLogged && (
-        <ExpensesProvider>
-          <CategoriesProvider>
+        <CategoriesProvider>
+          <ExpensesProvider>
             <main className="px-4">
               <Outlet />
             </main>
-          </CategoriesProvider>
-        </ExpensesProvider>
+          </ExpensesProvider>
+        </CategoriesProvider>
       )}
     </div>
   );
