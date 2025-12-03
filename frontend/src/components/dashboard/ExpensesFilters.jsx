@@ -4,7 +4,8 @@ import { useExpenses } from "../../hooks/useExpenses";
 
 export function ExpensesFilters({ cancelForm }) {
   const { activeCategories, defaultCategory } = useCategories();
-  const { commerceList, descriptionList } = useExpenses();
+  const { commerceList, descriptionList, handleFilterChange, activeFilters } =
+    useExpenses();
 
   useEffect(() => {
     if (!cancelForm) return;
@@ -28,19 +29,40 @@ export function ExpensesFilters({ cancelForm }) {
   }, []);
 
   return (
-    <section className="bg-slate-800 max-w-6xl max-h-svh mx-auto p-4 rounded-md flex flex-col gap-4 overflow-auto">
+    <section className="bg-slate-800 max-w-2xl max-h-svh mx-auto p-4 rounded-md flex flex-col gap-4 overflow-auto">
       <div>
         <h3 className="my-2">Date</h3>
         <div className="flex items-center gap-1 text-slate-300 text-sm">
-          <input type="radio" id="thisMonth" />
+          <input
+            type="radio"
+            id="thisMonth"
+            name="date"
+            value="thisMonth"
+            onChange={handleFilterChange}
+            checked={activeFilters.date === "thisMonth"}
+          />
           <label htmlFor="thisMonth">This Month</label>
         </div>
         <div className="flex items-center gap-1 text-slate-300 text-sm">
-          <input type="radio" id="lastMonth" />
+          <input
+            type="radio"
+            id="lastMonth"
+            name="date"
+            value="lastMonth"
+            onChange={handleFilterChange}
+            checked={activeFilters.date === "lastMonth"}
+          />
           <label htmlFor="lastMonth">Last Month</label>
         </div>
         <div className="flex items-center gap-1 text-slate-300 text-sm">
-          <input type="radio" id="thisYear" />
+          <input
+            type="radio"
+            id="thisYear"
+            name="date"
+            value="thisYear"
+            onChange={handleFilterChange}
+            checked={activeFilters.date === "thisYear"}
+          />
           <label htmlFor="thisYear">This Year</label>
         </div>
       </div>
@@ -49,7 +71,14 @@ export function ExpensesFilters({ cancelForm }) {
         <div className="flex flex-col gap-2 text-slate-300 text-sm">
           {activeCategories.map((category) => (
             <div key={category._id} className="flex items-center gap-1">
-              <input type="checkbox" id={category._id} />
+              <input
+                type="checkbox"
+                id={category._id}
+                value={category.name}
+                name="category"
+                onChange={handleFilterChange}
+                checked={activeFilters.category.includes(category.name)}
+              />
               <label htmlFor={category._id}>{category.name}</label>
             </div>
           ))}
@@ -60,7 +89,14 @@ export function ExpensesFilters({ cancelForm }) {
         <div className="flex flex-col gap-2 text-slate-300 text-sm">
           {defaultCategory.subcategories.map((subcategory) => (
             <div key={subcategory._id} className="flex items-center gap-1">
-              <input type="checkbox" id={subcategory._id} />
+              <input
+                type="checkbox"
+                id={subcategory._id}
+                value={subcategory.name}
+                name="subcategory"
+                onChange={handleFilterChange}
+                checked={activeFilters.subcategory.includes(subcategory.name)}
+              />
               <label htmlFor={subcategory._id}>{subcategory.name}</label>
             </div>
           ))}
@@ -71,7 +107,14 @@ export function ExpensesFilters({ cancelForm }) {
         <div className="flex flex-wrap gap-2 text-slate-300 text-sm">
           {commerceList.map((commerce) => (
             <div key={commerce} className="flex items-center gap-1">
-              <input type="checkbox" id={commerce} />
+              <input
+                type="checkbox"
+                id={commerce}
+                value={commerce}
+                name="commerce"
+                onChange={handleFilterChange}
+                checked={activeFilters.commerce.includes(commerce)}
+              />
               <label htmlFor={commerce}>{commerce}</label>
             </div>
           ))}
@@ -82,7 +125,14 @@ export function ExpensesFilters({ cancelForm }) {
         <div className="flex flex-wrap gap-2 text-slate-300 text-sm">
           {descriptionList.map((description) => (
             <div key={description} className="flex items-center gap-1">
-              <input type="checkbox" id={description} />
+              <input
+                type="checkbox"
+                id={description}
+                value={description}
+                name="description"
+                onChange={handleFilterChange}
+                checked={activeFilters.description.includes(description)}
+              />
               <label htmlFor={description}>{description}</label>
             </div>
           ))}

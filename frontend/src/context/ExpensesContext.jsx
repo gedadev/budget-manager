@@ -10,6 +10,13 @@ export function ExpensesProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
   const [commerceList, setCommerceList] = useState([]);
   const [descriptionList, setDescriptionList] = useState([]);
+  const [activeFilters, setActiveFilters] = useState({
+    date: "thisMonth",
+    category: [],
+    subcategory: [],
+    commerce: [],
+    description: [],
+  });
 
   useEffect(() => {
     getExpenses();
@@ -86,6 +93,37 @@ export function ExpensesProvider({ children }) {
     }
   }
 
+  function handleFilterChange(e) {
+    const { name, value, type } = e.target;
+
+    const updateFilters = (prev) => {
+      if (type === "radio") {
+        return {
+          ...prev,
+          [name]: value,
+        };
+      }
+      if (type === "checkbox") {
+        const currentValues = [...prev[name]];
+
+        if (currentValues.includes(value))
+          return {
+            ...prev,
+            [name]: currentValues.filter((item) => item !== value),
+          };
+
+        return {
+          ...prev,
+          [name]: [...prev[name], value],
+        };
+      }
+
+      return prev;
+    };
+
+    setActiveFilters((prev) => updateFilters(prev));
+  }
+
   function orderBy(expenses, order) {
     switch (order) {
       case "date-desc":
@@ -125,6 +163,8 @@ export function ExpensesProvider({ children }) {
     orderBy,
     commerceList,
     descriptionList,
+    handleFilterChange,
+    activeFilters,
   };
 
   return (
