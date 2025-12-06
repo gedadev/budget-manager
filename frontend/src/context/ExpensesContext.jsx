@@ -8,6 +8,7 @@ export function ExpensesProvider({ children }) {
   const { request, endpoints } = useApi();
   const { getCategoryName } = useCategories();
   const [expenses, setExpenses] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [commerceList, setCommerceList] = useState([]);
   const [descriptionList, setDescriptionList] = useState([]);
   const [activeFilters, setActiveFilters] = useState({
@@ -121,7 +122,49 @@ export function ExpensesProvider({ children }) {
       return prev;
     };
 
-    setActiveFilters((prev) => updateFilters(prev));
+    const updatedFilters = updateFilters(activeFilters);
+
+    setActiveFilters(updatedFilters);
+    filterExpenses(updatedFilters);
+  }
+
+  function filterExpenses(filters) {
+    const filtered = expenses.filter((expense) => {
+      const { date, category, subcategory, commerce, description } = filters;
+
+      const dateMatch =
+        date === "thisMonth"
+          ? new Date(expense.date).getMonth() === new Date().getMonth()
+          : date === "lastMonth"
+          ? new Date(expense.date).getMonth() === new Date().getMonth() - 1
+          : date === "thisYear"
+          ? new Date(expense.date).getFullYear() === new Date().getFullYear()
+          : true;
+      const categoryMatch =
+        category.length === 0
+          ? true
+          : category.includes(getCategoryName(expense.categoryId));
+      const subcategoryMatch =
+        subcategory.length === 0
+          ? true
+          : subcategory.includes(getCategoryName(expense.subcategoryId, true));
+      const commerceMatch =
+        commerce.length === 0 ? true : commerce.includes(expense.commerce);
+      const descriptionMatch =
+        description.length === 0
+          ? true
+          : description.includes(expense.description);
+
+      return (
+        dateMatch &&
+        categoryMatch &&
+        subcategoryMatch &&
+        commerceMatch &&
+        descriptionMatch
+      );
+    });
+
+    setFilteredExpenses(filtered);
   }
 
   function orderBy(expenses, order) {
@@ -165,6 +208,7 @@ export function ExpensesProvider({ children }) {
     descriptionList,
     handleFilterChange,
     activeFilters,
+    filteredExpenses,
   };
 
   return (

@@ -15,7 +15,8 @@ import { ExpenseForm } from "./ExpenseForm";
 import { ExpensesFilters } from "./ExpensesFilters";
 
 export function ExpensesList() {
-  const { expenses, orderBy } = useExpenses();
+  const { expenses, filteredExpenses, handleFilterChange, orderBy } =
+    useExpenses();
   const [activeModal, setActiveModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -23,8 +24,14 @@ export function ExpensesList() {
   const [activeFilters, setActiveFilters] = useState(false);
 
   useEffect(() => {
-    setOrderedExpenses(orderBy(expenses, "date-desc"));
+    handleFilterChange({
+      target: { name: "date", value: "thisMonth", type: "radio" },
+    });
   }, [expenses]);
+
+  useEffect(() => {
+    setOrderedExpenses(orderBy(filteredExpenses, "date-desc"));
+  }, [filteredExpenses]);
 
   const cancelForm = () => setActiveModal(false);
   const cancelFilters = () => setActiveFilters(false);
@@ -51,7 +58,7 @@ export function ExpensesList() {
             id="orderBy"
             className="rounded-md border border-slate-600 p-2 text-slate-300 bg-transparent focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
             onChange={(e) =>
-              setOrderedExpenses(orderBy(expenses, e.target.value))
+              setOrderedExpenses(orderBy(filteredExpenses, e.target.value))
             }
           >
             <option value="date-desc">Newest First</option>
