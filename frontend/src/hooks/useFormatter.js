@@ -13,9 +13,9 @@ export function useFormatter() {
   const cleanSpaces = (value) => value.replace(/\s/g, "");
 
   const formatDateInput = (dateObj) => {
-    const year = String(dateObj.getFullYear());
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const date = String(dateObj.getDate()).padStart(2, "0");
+    const year = String(dateObj.getUTCFullYear());
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+    const date = String(dateObj.getUTCDate()).padStart(2, "0");
 
     return `${year}-${month}-${date}`;
   };
