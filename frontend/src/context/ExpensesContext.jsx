@@ -5,19 +5,20 @@ import { useCategories } from "../hooks/useCategories";
 export const ExpensesContext = createContext(null);
 
 export function ExpensesProvider({ children }) {
+  const defaultFilters = {
+    date: "thisMonth",
+    category: [],
+    subcategory: [],
+    commerce: [],
+    description: [],
+  };
   const { request, endpoints } = useApi();
   const { getCategoryName } = useCategories();
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [commerceList, setCommerceList] = useState([]);
   const [descriptionList, setDescriptionList] = useState([]);
-  const [activeFilters, setActiveFilters] = useState({
-    date: "thisMonth",
-    category: [],
-    subcategory: [],
-    commerce: [],
-    description: [],
-  });
+  const [activeFilters, setActiveFilters] = useState(defaultFilters);
 
   useEffect(() => {
     getExpenses();
@@ -176,6 +177,11 @@ export function ExpensesProvider({ children }) {
     setLists(filtered);
   }
 
+  function resetFilters() {
+    setActiveFilters(defaultFilters);
+    filterExpenses(defaultFilters);
+  }
+
   function orderBy(expenses, order) {
     switch (order) {
       case "date-desc":
@@ -220,6 +226,7 @@ export function ExpensesProvider({ children }) {
     filteredExpenses,
     setLists,
     resetLists,
+    resetFilters,
   };
 
   return (
