@@ -5,8 +5,15 @@ import { useFormatter } from "../../hooks/useFormatter";
 
 export function ExpensesFilters({ cancelForm }) {
   const { activeCategories } = useCategories();
-  const { commerceList, descriptionList, handleFilterChange, activeFilters } =
-    useExpenses();
+  const {
+    commerceList,
+    descriptionList,
+    handleFilterChange,
+    activeFilters,
+    filteredExpenses,
+    setLists,
+    resetLists,
+  } = useExpenses();
   const { formatLabel } = useFormatter();
   const [activeSubcategories, setActiveSubcategories] = useState([]);
 
@@ -28,12 +35,14 @@ export function ExpensesFilters({ cancelForm }) {
     return () => {
       document.removeEventListener("keydown", handleEscape);
       document.removeEventListener("click", handleClick);
+      resetLists();
     };
   }, []);
 
   useEffect(() => {
     getActiveSubcategories();
-  }, []);
+    setLists(filteredExpenses);
+  }, [filteredExpenses]);
 
   const handleCategoryChange = (e) => {
     handleFilterChange(e);

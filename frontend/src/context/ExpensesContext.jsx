@@ -46,15 +46,23 @@ export function ExpensesProvider({ children }) {
       if (expensesData instanceof Error) throw expensesData;
 
       setExpenses([...expensesData]);
-      setCommerceList([
-        ...new Set(expensesData.map((expense) => expense.commerce)),
-      ]);
-      setDescriptionList([
-        ...new Set(expensesData.map((expense) => expense.description)),
-      ]);
+      setLists(expensesData);
     } catch (error) {
       throw error;
     }
+  }
+
+  function setLists(expensesList) {
+    setCommerceList(
+      [...new Set(expensesList.map((expense) => expense.commerce))].sort()
+    );
+    setDescriptionList(
+      [...new Set(expensesList.map((expense) => expense.description))].sort()
+    );
+  }
+
+  function resetLists() {
+    setLists(expenses);
   }
 
   async function deleteExpense(expenseId) {
@@ -165,12 +173,7 @@ export function ExpensesProvider({ children }) {
     });
 
     setFilteredExpenses(filtered);
-    setCommerceList(
-      [...new Set(filtered.map((expense) => expense.commerce))].sort()
-    );
-    setDescriptionList(
-      [...new Set(filtered.map((expense) => expense.description))].sort()
-    );
+    setLists(filtered);
   }
 
   function orderBy(expenses, order) {
@@ -215,6 +218,8 @@ export function ExpensesProvider({ children }) {
     handleFilterChange,
     activeFilters,
     filteredExpenses,
+    setLists,
+    resetLists,
   };
 
   return (
