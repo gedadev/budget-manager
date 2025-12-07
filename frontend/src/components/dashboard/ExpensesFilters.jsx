@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCategories } from "../../hooks/useCategories";
 import { useExpenses } from "../../hooks/useExpenses";
+import { useFormatter } from "../../hooks/useFormatter";
 
 export function ExpensesFilters({ cancelForm }) {
-  const { activeCategories, defaultCategory } = useCategories();
+  const { activeCategories } = useCategories();
   const { commerceList, descriptionList, handleFilterChange, activeFilters } =
     useExpenses();
+  const { formatLabel } = useFormatter();
+  const [activeSubcategories, setActiveSubcategories] = useState([]);
 
   useEffect(() => {
     if (!cancelForm) return;
@@ -27,6 +30,34 @@ export function ExpensesFilters({ cancelForm }) {
       document.removeEventListener("click", handleClick);
     };
   }, []);
+
+  useEffect(() => {
+    getActiveSubcategories();
+  }, []);
+
+  const handleCategoryChange = (e) => {
+    handleFilterChange(e);
+
+    const { value } = e.target;
+
+    getActiveSubcategories(value);
+  };
+
+  const getActiveSubcategories = (value) => {
+    const categoryFilters = [...activeFilters.category];
+    const selectedCategories = categoryFilters.includes(value)
+      ? categoryFilters.filter((category) => category !== value)
+      : [...categoryFilters, value].filter(Boolean);
+    const subcategories = activeCategories
+      .filter((category) => selectedCategories.includes(category.name))
+      .map((category) => ({
+        _id: category._id,
+        name: category.name,
+        subcategories: category.subcategories,
+      }));
+
+    setActiveSubcategories(subcategories);
+  };
 
   return (
     <section className="bg-slate-800 max-w-2xl max-h-svh mx-auto p-4 rounded-md flex flex-col gap-4 overflow-auto">
@@ -76,7 +107,7 @@ export function ExpensesFilters({ cancelForm }) {
                 id={category._id}
                 value={category.name}
                 name="category"
-                onChange={handleFilterChange}
+                onChange={handleCategoryChange}
                 checked={activeFilters.category.includes(category.name)}
               />
               <label htmlFor={category._id}>{category.name}</label>
@@ -86,18 +117,25 @@ export function ExpensesFilters({ cancelForm }) {
       </div>
       <div>
         <h3 className="my-2">Subcategory</h3>
-        <div className="flex flex-col gap-2 text-slate-300 text-sm">
-          {defaultCategory.subcategories.map((subcategory) => (
-            <div key={subcategory._id} className="flex items-center gap-1">
-              <input
-                type="checkbox"
-                id={subcategory._id}
-                value={subcategory.name}
-                name="subcategory"
-                onChange={handleFilterChange}
-                checked={activeFilters.subcategory.includes(subcategory.name)}
-              />
-              <label htmlFor={subcategory._id}>{subcategory.name}</label>
+        <div className="flex gap-2 text-slate-300 text-sm">
+          {activeSubcategories.map((category) => (
+            <div key={category._id} className="flex flex-col gap-1">
+              <p>{formatLabel(category.name)}</p>
+              {category.subcategories.map((subcategory) => (
+                <div key={subcategory._id} className="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id={subcategory._id}
+                    value={subcategory.name}
+                    name="subcategory"
+                    onChange={handleFilterChange}
+                    checked={activeFilters.subcategory.includes(
+                      subcategory.name
+                    )}
+                  />
+                  <label htmlFor={subcategory._id}>{subcategory.name}</label>
+                </div>
+              ))}
             </div>
           ))}
         </div>
