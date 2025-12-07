@@ -165,6 +165,12 @@ export function ExpensesProvider({ children }) {
     });
 
     setFilteredExpenses(filtered);
+    setCommerceList(
+      [...new Set(filtered.map((expense) => expense.commerce))].sort()
+    );
+    setDescriptionList(
+      [...new Set(filtered.map((expense) => expense.description))].sort()
+    );
   }
 
   function orderBy(expenses, order) {
