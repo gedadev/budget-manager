@@ -2,6 +2,7 @@ import {
   LuChevronRight,
   LuDot,
   LuFilter,
+  LuFilterX,
   LuReceipt,
   LuSquarePen,
   LuTrash2,
@@ -17,11 +18,11 @@ import { ExpensesFilters } from "./ExpensesFilters";
 export function ExpensesList() {
   const { expenses, filteredExpenses, handleFilterChange, orderBy } =
     useExpenses();
-  const [activeModal, setActiveModal] = useState(false);
+  const [activeEditModal, setActiveEditModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [orderedExpenses, setOrderedExpenses] = useState([]);
-  const [activeFilters, setActiveFilters] = useState(false);
+  const [activeFilterModal, setActiveFilterModal] = useState(false);
 
   useEffect(() => {
     handleFilterChange({
@@ -33,11 +34,11 @@ export function ExpensesList() {
     setOrderedExpenses(orderBy(filteredExpenses, "date-desc"));
   }, [filteredExpenses]);
 
-  const cancelForm = () => setActiveModal(false);
-  const cancelFilters = () => setActiveFilters(false);
+  const cancelForm = () => setActiveEditModal(false);
+  const cancelFilters = () => setActiveFilterModal(false);
 
   const handleEditModal = (expense) => {
-    setActiveModal(true);
+    setActiveEditModal(true);
     setFormAction("edit");
     setSelectedExpense(expense);
   };
@@ -48,7 +49,7 @@ export function ExpensesList() {
         <div>
           <LuFilter
             className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
-            onClick={() => setActiveFilters(!activeFilters)}
+            onClick={() => setActiveFilterModal(!activeFilterModal)}
           />
         </div>
         <div className="flex items-center gap-2">
@@ -87,12 +88,12 @@ export function ExpensesList() {
       <div
         id="modal-bg"
         className={`${
-          activeModal
+          activeEditModal
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
       >
-        {activeModal && (
+        {activeEditModal && (
           <ExpenseForm
             cancelForm={cancelForm}
             formAction={formAction}
@@ -103,12 +104,12 @@ export function ExpensesList() {
       <div
         id="filters-bg"
         className={`${
-          activeFilters
+          activeFilterModal
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
       >
-        {activeFilters && <ExpensesFilters cancelForm={cancelFilters} />}
+        {activeFilterModal && <ExpensesFilters cancelForm={cancelFilters} />}
       </div>
     </section>
   );
