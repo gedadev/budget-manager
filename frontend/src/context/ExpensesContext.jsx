@@ -107,7 +107,7 @@ export function ExpensesProvider({ children }) {
     const { name, value, type } = e.target;
 
     const updateFilters = (prev) => {
-      if (type === "radio") {
+      if (type === "radio" || name === "search") {
         return {
           ...prev,
           [name]: value,
@@ -139,7 +139,8 @@ export function ExpensesProvider({ children }) {
 
   function filterExpenses(filters) {
     const filtered = expenses.filter((expense) => {
-      const { date, category, subcategory, commerce, description } = filters;
+      const { date, category, subcategory, commerce, description, search } =
+        filters;
 
       const dateMatch =
         date === "thisMonth"
@@ -163,18 +164,35 @@ export function ExpensesProvider({ children }) {
         description.length === 0
           ? true
           : description.includes(expense.description);
+      const searchMatch = searchExpenses(search, expense);
 
       return (
         dateMatch &&
         categoryMatch &&
         subcategoryMatch &&
         commerceMatch &&
-        descriptionMatch
+        descriptionMatch &&
+        searchMatch
       );
     });
 
     setFilteredExpenses(filtered);
     setLists(filtered);
+  }
+
+  function searchExpenses(search, expense) {
+    if (!search || !expense) return true;
+
+    return (
+      expense.description.toLowerCase().includes(search.toLowerCase()) ||
+      expense.commerce.toLowerCase().includes(search.toLowerCase()) ||
+      getCategoryName(expense.categoryId)
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      getCategoryName(expense.subcategoryId, true)
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
   }
 
   function resetFilters() {
