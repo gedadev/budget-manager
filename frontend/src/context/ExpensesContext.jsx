@@ -13,9 +13,10 @@ export function ExpensesProvider({ children }) {
     description: [],
   };
   const { request, endpoints } = useApi();
-  const { getCategoryName } = useCategories();
+  const { getCategoryName, activeCategories } = useCategories();
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [totalsByCategory, setTotalsByCategory] = useState([]);
   const [commerceList, setCommerceList] = useState([]);
   const [descriptionList, setDescriptionList] = useState([]);
   const [activeFilters, setActiveFilters] = useState(defaultFilters);
@@ -28,6 +29,59 @@ export function ExpensesProvider({ children }) {
     if (expenses.length === 0) return;
     filterExpenses(activeFilters);
   }, [expenses]);
+
+  useEffect(() => {
+    if (filteredExpenses.length === 0) return;
+    getTotalsByCategory();
+  }, [filteredExpenses]);
+
+  function getTotalsByCategory() {
+    const totals = activeCategories.map((category) => {
+      const subcategories = category.subcategories.map((subcategory) => {
+        const { expensesSum, expensesCount } = filteredExpenses.reduce(
+          (acc, expense) => {
+            if (expense.subcategoryId === subcategory._id) {
+              return {
+                expensesSum: acc.expensesSum + expense.amount,
+                expensesCount: acc.expensesCount + 1,
+              };
+            }
+            return acc;
+          },
+          { expensesSum: 0, expensesCount: 0 }
+        );
+
+        return {
+          _id: subcategory._id,
+          name: subcategory.name,
+          expensesSum,
+          expensesCount,
+        };
+      });
+
+      const { expensesSum, expensesCount } = subcategories.reduce(
+        (acc, subcategory) => {
+          return {
+            expensesSum: acc.expensesSum + subcategory.expensesSum,
+            expensesCount: acc.expensesCount + subcategory.expensesCount,
+          };
+        },
+        { expensesSum: 0, expensesCount: 0 }
+      );
+
+      return {
+        _id: category._id,
+        name: category.name,
+        emoji: category.emoji,
+        color: category.color,
+        expensesSum,
+        expensesCount,
+        subcategories,
+      };
+    });
+
+    setTotalsByCategory(totals);
+  }
 
   async function addExpense(formData) {
     try {
@@ -250,6 +304,7 @@ export function ExpensesProvider({ children }) {
     setLists,
     resetLists,
     resetFilters,
+    totalsByCategory,
   };
 
   return (
