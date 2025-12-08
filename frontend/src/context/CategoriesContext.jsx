@@ -5,22 +5,17 @@ export const CategoriesContext = createContext(null);
 
 export function CategoriesProvider({ children }) {
   const { request, endpoints } = useApi();
-  const [categories, setCategories] = useState();
-  const [subcategories, setSubcategories] = useState();
-  const [activeCategories, setActiveCategories] = useState();
-  const [defaultCategory, setDefaultCategory] = useState();
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [activeCategories, setActiveCategories] = useState([]);
+  const [defaultCategory, setDefaultCategory] = useState({});
 
   useEffect(() => {
     getCategories();
   }, []);
 
   useEffect(() => {
-    if (!activeCategories) return;
-
-    if (activeCategories.length === 0) {
-      setDefaultCategory({});
-      return;
-    }
+    if (activeCategories.length === 0) return;
 
     const firstCategory = activeCategories[0];
     const foundDefault = activeCategories.filter(
@@ -131,7 +126,7 @@ export function CategoriesProvider({ children }) {
   }
 
   function getCategoryName(id, isSubcategory) {
-    if (!categories || !subcategories || !id) return;
+    if (categories.length === 0 || subcategories.length === 0 || !id) return;
 
     if (isSubcategory) {
       const [subcategory] = subcategories.filter(
@@ -145,7 +140,7 @@ export function CategoriesProvider({ children }) {
   }
 
   function checkActiveCategory(id, isSubcategory) {
-    if (!categories || !subcategories || !id) return;
+    if (categories.length === 0 || subcategories.length === 0 || !id) return;
 
     if (isSubcategory) {
       const [subcategory] = subcategories.filter(
