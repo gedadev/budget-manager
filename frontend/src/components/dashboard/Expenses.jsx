@@ -3,12 +3,14 @@ import { useAuth } from "../../hooks/useAuth";
 import { ExpenseForm } from "./ExpenseForm";
 import { ExpensesList } from "./ExpensesList";
 import { LuFolders, LuLogOut } from "react-icons/lu";
+import { ExpensesSummary } from "./ExpensesSummary";
 
 export function Expenses() {
   return (
     <div>
       <Header />
       <ExpenseForm />
+      <ExpensesSummary />
       <ExpensesList />
     </div>
   );
