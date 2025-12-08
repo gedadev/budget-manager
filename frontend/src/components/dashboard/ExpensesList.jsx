@@ -15,19 +15,12 @@ import { ExpensesFilters } from "./ExpensesFilters";
 import { ExpensesToolBar } from "./ExpensesToolBar";
 
 export function ExpensesList() {
-  const { expenses, filteredExpenses, handleFilterChange, orderBy } =
-    useExpenses();
+  const { filteredExpenses, orderBy } = useExpenses();
   const [activeEditModal, setActiveEditModal] = useState(false);
   const [formAction, setFormAction] = useState("");
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [orderedExpenses, setOrderedExpenses] = useState([]);
   const [activeFilterModal, setActiveFilterModal] = useState(false);
-
-  useEffect(() => {
-    handleFilterChange({
-      target: { name: "date", value: "thisMonth", type: "radio" },
-    });
-  }, [expenses]);
 
   useEffect(() => {
     setOrderedExpenses(orderBy(filteredExpenses, "date-desc"));

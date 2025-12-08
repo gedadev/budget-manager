@@ -24,6 +24,11 @@ export function ExpensesProvider({ children }) {
     getExpenses();
   }, []);
 
+  useEffect(() => {
+    if (expenses.length === 0) return;
+    filterExpenses(activeFilters);
+  }, [expenses]);
+
   async function addExpense(formData) {
     try {
       const newExpense = await request(endpoints.expenses.new, {
