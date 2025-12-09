@@ -17,6 +17,9 @@ export function ExpensesProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [totalsByCategory, setTotalsByCategory] = useState([]);
+  const [totalsFilters, setTotalsFilters] = useState({
+    date: defaultFilters.date,
+  });
   const [commerceList, setCommerceList] = useState([]);
   const [descriptionList, setDescriptionList] = useState([]);
   const [activeFilters, setActiveFilters] = useState(defaultFilters);
@@ -27,17 +30,16 @@ export function ExpensesProvider({ children }) {
 
   useEffect(() => {
     if (expenses.length === 0) return;
+
     const filtered = filterExpenses(expenses, activeFilters);
     setFilteredExpenses(filtered);
     setLists(filtered);
+
+    const totals = getTotalsByCategory(filtered);
+    setTotalsByCategory(totals);
   }, [expenses]);
 
-  useEffect(() => {
-    if (filteredExpenses.length === 0) return;
-    getTotalsByCategory();
-  }, [filteredExpenses]);
-
-  function getTotalsByCategory() {
+  function getTotalsByCategory(expenses) {
     const totals = activeCategories.map((category) => {
       const subcategories = category.subcategories.map((subcategory) => {
         const { expensesSum, expensesCount } = expenses.reduce(
@@ -82,6 +84,15 @@ export function ExpensesProvider({ children }) {
       };
     });
 
+    return totals;
+  }
+
+  function handleTotalsFilterChange(e) {
+    const { name, value } = e.target;
+    setTotalsFilters({ ...totalsFilters, [name]: value });
+
+    const filtered = filterExpenses(expenses, { [name]: value });
+    const totals = getTotalsByCategory(filtered);
     setTotalsByCategory(totals);
   }
 
@@ -214,17 +225,19 @@ export function ExpensesProvider({ children }) {
           ? new Date(expense.date).getFullYear() === new Date().getFullYear()
           : true;
       const categoryMatch =
-        category.length === 0
+        !category || category.length === 0
           ? true
           : category.includes(getCategoryName(expense.categoryId));
       const subcategoryMatch =
-        subcategory.length === 0
+        !subcategory || subcategory.length === 0
           ? true
           : subcategory.includes(getCategoryName(expense.subcategoryId, true));
       const commerceMatch =
-        commerce.length === 0 ? true : commerce.includes(expense.commerce);
+        !commerce || commerce.length === 0
+          ? true
+          : commerce.includes(expense.commerce);
       const descriptionMatch =
-        description.length === 0
+        !description || description.length === 0
           ? true
           : description.includes(expense.description);
       const searchMatch = searchExpenses(search, expense);
@@ -310,6 +323,8 @@ export function ExpensesProvider({ children }) {
     resetLists,
     resetFilters,
     totalsByCategory,
+    handleTotalsFilterChange,
+    totalsFilters,
   };
 
   return (
