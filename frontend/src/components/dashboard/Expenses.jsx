@@ -4,6 +4,7 @@ import { ExpenseForm } from "./ExpenseForm";
 import { ExpensesList } from "./ExpensesList";
 import { LuFolders, LuLogOut } from "react-icons/lu";
 import { ExpensesSummary } from "./ExpensesSummary";
+import { RecentExpenses } from "./RecentExpenses";
 
 export function Expenses() {
   return (
@@ -11,7 +12,7 @@ export function Expenses() {
       <Header />
       <ExpenseForm />
       <ExpensesSummary />
-      <ExpensesList />
+      <RecentExpenses />
     </div>
   );
 }
