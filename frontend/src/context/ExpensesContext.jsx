@@ -27,7 +27,9 @@ export function ExpensesProvider({ children }) {
 
   useEffect(() => {
     if (expenses.length === 0) return;
-    filterExpenses(activeFilters);
+    const filtered = filterExpenses(expenses, activeFilters);
+    setFilteredExpenses(filtered);
+    setLists(filtered);
   }, [expenses]);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function ExpensesProvider({ children }) {
   function getTotalsByCategory() {
     const totals = activeCategories.map((category) => {
       const subcategories = category.subcategories.map((subcategory) => {
-        const { expensesSum, expensesCount } = filteredExpenses.reduce(
+        const { expensesSum, expensesCount } = expenses.reduce(
           (acc, expense) => {
             if (expense.subcategoryId === subcategory._id) {
               return {
@@ -193,10 +195,12 @@ export function ExpensesProvider({ children }) {
     const updatedFilters = updateFilters(activeFilters);
 
     setActiveFilters(updatedFilters);
-    filterExpenses(updatedFilters);
+    const filtered = filterExpenses(expenses, updatedFilters);
+    setFilteredExpenses(filtered);
+    setLists(filtered);
   }
 
-  function filterExpenses(filters) {
+  function filterExpenses(expenses, filters) {
     const filtered = expenses.filter((expense) => {
       const { date, category, subcategory, commerce, description, search } =
         filters;
@@ -235,8 +239,7 @@ export function ExpensesProvider({ children }) {
       );
     });
 
-    setFilteredExpenses(filtered);
-    setLists(filtered);
+    return filtered;
   }
 
   function searchExpenses(search, expense) {
@@ -256,7 +259,9 @@ export function ExpensesProvider({ children }) {
 
   function resetFilters() {
     setActiveFilters(defaultFilters);
-    filterExpenses(defaultFilters);
+    const filtered = filterExpenses(expenses, defaultFilters);
+    setFilteredExpenses(filtered);
+    setLists(filtered);
   }
 
   function orderBy(expenses, order) {
