@@ -1,17 +1,23 @@
 import { useExpenses } from "../../hooks/useExpenses";
 import { useFormatter } from "../../hooks/useFormatter";
 import { useState } from "react";
+import { useScreen } from "../../hooks/useScreen";
 
 export function ExpensesSummary() {
   const { totalsByCategory, handleTotalsFilterChange, totalsFilters } =
     useExpenses();
   const { formatCurrency } = useFormatter();
+  const { isMobile } = useScreen();
   const [showBy, setShowBy] = useState("category");
 
   return (
     <section>
-      <div className="max-w-6xl mx-auto my-4 flex items-center justify-between">
-        <h2>Expenses by category</h2>
+      <div
+        className={`max-w-6xl mx-auto my-4 flex items-center gap-4 justify-between text-sm ${
+          isMobile ? "flex-col" : "flex-row"
+        }`}
+      >
+        <h2 className="text-lg font-semibold">Expenses by category</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <label htmlFor="date">Date:</label>
@@ -20,7 +26,7 @@ export function ExpensesSummary() {
               defaultValue={totalsFilters.date}
               onChange={handleTotalsFilterChange}
               name="date"
-              className="bg-slate-700 rounded-md border border-slate-600 p-2 focus:outline-slate-500 focus:outline-none focus:outline-offset-0 "
+              className="bg-slate-700 rounded-md border border-slate-600 p-1 sm:p-2 focus:outline-slate-500 focus:outline-none focus:outline-offset-0 "
             >
               <option value="thisMonth">This month</option>
               <option value="lastMonth">Last month</option>
@@ -33,7 +39,7 @@ export function ExpensesSummary() {
               id="groupBy"
               defaultValue="category"
               onChange={(e) => setShowBy(e.target.value)}
-              className="bg-slate-700 rounded-md border border-slate-600 p-2 focus:outline-slate-500 focus:outline-none focus:outline-offset-0 "
+              className="bg-slate-700 rounded-md border border-slate-600 p-1 sm:p-2 focus:outline-slate-500 focus:outline-none focus:outline-offset-0 "
             >
               <option value="category">Categories</option>
               <option value="subcategory">Subcategories</option>
