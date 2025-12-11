@@ -45,7 +45,7 @@ export function ExpensesList() {
   };
 
   return (
-    <section className="min-h-screen pt-5">
+    <section className="max-w-6xl mx-auto min-h-screen pt-5">
       <header className="w-full">
         <div className="flex items-center gap-2 text-3xl">
           <LuArrowLeft
@@ -58,7 +58,7 @@ export function ExpensesList() {
           <p>Manage your expenses</p>
         </div>
       </header>
-      <div className="bg-slate-800 max-w-6xl mx-auto p-4 mt-4 rounded-md flex flex-col gap-4">
+      <div className="bg-slate-800 p-4 mt-4 rounded-md flex flex-col gap-4">
         <ExpensesToolBar
           handleFilterModal={handleFilterModal}
           handleExpensesOrderBy={handleExpensesOrderBy}
