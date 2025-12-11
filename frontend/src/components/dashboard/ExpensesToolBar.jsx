@@ -19,8 +19,8 @@ export function ExpensesToolBar({ handleFilterModal, handleExpensesOrderBy }) {
   };
 
   return (
-    <div className="flex gap-8">
-      <div className="flex items-center gap-2 grow">
+    <div className="flex gap-2 sm:gap-8 flex-col sm:flex-row items-center">
+      <div className="flex items-center gap-2 grow w-full sm:w-auto text-xs sm:text-sm relative">
         <input
           type="text"
           placeholder="Search"
@@ -32,25 +32,27 @@ export function ExpensesToolBar({ handleFilterModal, handleExpensesOrderBy }) {
         />
         <LuSearch
           onClick={() => searchInputRef.current.focus()}
-          className="text-slate-400 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-base text-slate-400 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
         />
       </div>
-      <div className="flex items-center gap-4">
-        {isFiltered() && (
+      <div className="flex items-center gap-4 justify-end w-full sm:w-auto">
+        <div className="flex items-center gap-3 border-r-2 border-slate-700 pr-2">
+          {isFiltered() && (
+            <div>
+              <LuFilterX
+                className="text-red-500 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+                onClick={resetFilters}
+              />
+            </div>
+          )}
           <div>
-            <LuFilterX
-              className="text-red-500 cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
-              onClick={resetFilters}
+            <LuFilter
+              className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+              onClick={handleFilterModal}
             />
           </div>
-        )}
-        <div>
-          <LuFilter
-            className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
-            onClick={handleFilterModal}
-          />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-xs sm:text-sm">
           <label htmlFor="orderBy">Order by:</label>
           <select
             name="orderBy"
