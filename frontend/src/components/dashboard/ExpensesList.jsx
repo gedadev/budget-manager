@@ -1,7 +1,7 @@
 import {
+  LuArrowLeft,
   LuChevronRight,
   LuDot,
-  LuReceipt,
   LuSquarePen,
   LuTrash2,
 } from "react-icons/lu";
@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { ExpenseForm } from "./ExpenseForm";
 import { ExpensesFilters } from "./ExpensesFilters";
 import { ExpensesToolBar } from "./ExpensesToolBar";
+import { useNavigate } from "react-router-dom";
+import { useScreen } from "../../hooks/useScreen";
 
 export function ExpensesList() {
   const { filteredExpenses, orderBy } = useExpenses();
@@ -21,6 +23,7 @@ export function ExpensesList() {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [orderedExpenses, setOrderedExpenses] = useState([]);
   const [activeFilterModal, setActiveFilterModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setOrderedExpenses(orderBy(filteredExpenses, "date-desc"));
@@ -42,50 +45,64 @@ export function ExpensesList() {
   };
 
   return (
-    <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md mt-4">
-      <ExpensesToolBar
-        handleFilterModal={handleFilterModal}
-        handleExpensesOrderBy={handleExpensesOrderBy}
-      />
-      <h2 className="flex items-center gap-2 my-4 text-xl">
-        <LuReceipt />
-        Recent Expenses
-      </h2>
-      <div className="flex flex-col gap-2">
-        {orderedExpenses.map((expense) => (
-          <ExpenseItem
-            key={expense._id}
-            expense={expense}
-            handleEditModal={handleEditModal}
+    <section className="min-h-screen pt-5">
+      <header className="w-full">
+        <div className="flex items-center gap-2 text-3xl">
+          <LuArrowLeft
+            className="cursor-pointer hover:scale-110 transition-all duration-200 ease-in-out"
+            onClick={() => navigate(-1)}
           />
-        ))}
-      </div>
-
-      <div
-        id="modal-bg"
-        className={`${
-          activeEditModal
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
-      >
-        {activeEditModal && (
-          <ExpenseForm
-            cancelForm={cancelForm}
-            formAction={formAction}
-            selectedExpense={selectedExpense}
-          />
+          <h1>Expenses</h1>
+        </div>
+        <div className="text-sm text-slate-400 px-2">
+          <p>Manage your expenses</p>
+        </div>
+      </header>
+      <div className="bg-slate-800 max-w-6xl mx-auto p-4 mt-4 rounded-md flex flex-col gap-4">
+        <ExpensesToolBar
+          handleFilterModal={handleFilterModal}
+          handleExpensesOrderBy={handleExpensesOrderBy}
+        />
+        {filteredExpenses.length === 0 ? (
+          <p className="text-slate-400 text-center">No expenses found</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {orderedExpenses.map((expense) => (
+              <ExpenseItem
+                key={expense._id}
+                expense={expense}
+                handleEditModal={handleEditModal}
+              />
+            ))}
+          </div>
         )}
-      </div>
-      <div
-        id="filters-bg"
-        className={`${
-          activeFilterModal
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
-      >
-        {activeFilterModal && <ExpensesFilters cancelForm={cancelFilters} />}
+
+        <div
+          id="modal-bg"
+          className={`${
+            activeEditModal
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
+        >
+          {activeEditModal && (
+            <ExpenseForm
+              cancelForm={cancelForm}
+              formAction={formAction}
+              selectedExpense={selectedExpense}
+            />
+          )}
+        </div>
+        <div
+          id="filters-bg"
+          className={`${
+            activeFilterModal
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          } fixed top-0 right-0 min-h-screen min-w-full flex items-center justify-center bg-slate-900 bg-opacity-75 transition-all duration-200 ease-in-out`}
+        >
+          {activeFilterModal && <ExpensesFilters cancelForm={cancelFilters} />}
+        </div>
       </div>
     </section>
   );
@@ -95,11 +112,14 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
   const { deleteExpense } = useExpenses();
   const { getCategoryName, checkActiveCategory } = useCategories();
   const { formatDate, formatCurrency } = useFormatter();
+  const { isMobile } = useScreen();
 
   const getDate = (dateInput) => {
     const { date, day, month } = formatDate(dateInput);
 
-    return `${day}, ${month} ${date}`;
+    return isMobile
+      ? `${month.slice(0, 3)} ${date}`
+      : `${day}, ${month} ${date}`;
   };
 
   const handleExpenseDelete = async (expenseId) => {
@@ -111,14 +131,14 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
   };
 
   return (
-    <div className="w-full flex justify-between rounded-md border border-slate-600 p-3">
+    <div className="w-full flex justify-between items-center rounded-md border border-slate-600 p-3">
       <div>
         <div className="flex items-center gap-2">
           <span>{expense.commerce}</span>
           <LuChevronRight />
           <span>{expense.description}</span>
         </div>
-        <div className="flex items-center gap-1 text-sm text-slate-400">
+        <div className="flex items-center gap-1 text-xs sm:text-sm text-slate-400">
           <span
             className={`${
               !checkActiveCategory(expense.categoryId) && "line-through"
@@ -143,7 +163,7 @@ const ExpenseItem = ({ expense, handleEditModal }) => {
           <span>{getDate(expense.date)}</span>
         </div>
       </div>
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 sm:gap-6 flex-col sm:flex-row">
         <span>{formatCurrency(expense.amount)}</span>
         <div className="flex gap-4">
           <LuSquarePen
