@@ -34,10 +34,16 @@ export function ExpensesProvider({ children }) {
     const filtered = filterExpenses(expenses, activeFilters);
     setFilteredExpenses(filtered);
     setLists(filtered);
+  }, [expenses]);
+
+  useEffect(() => {
+    if (activeCategories.length === 0 && expenses.length === 0) return;
+
+    const filtered = filterExpenses(expenses, activeFilters);
 
     const totals = getTotalsByCategory(filtered);
     setTotalsByCategory(totals);
-  }, [expenses]);
+  }, [expenses, activeCategories]);
 
   function getTotalsByCategory(expenses) {
     const totals = activeCategories.map((category) => {
