@@ -13,12 +13,8 @@ export function ExpenseForm({
   selectedExpense,
 }) {
   const { addExpense, updateExpense } = useExpenses();
-  const {
-    activeCategories,
-    defaultCategory,
-    getCategoryName,
-    getSubcategoryName,
-  } = useCategories();
+  const { activeCategories, defaultCategory, getCategoryName } =
+    useCategories();
   const { formatCurrency, cleanCurrency, formatDateInput } = useFormatter();
   const { formErrors, handleBlur, resetErrors, validateForm } =
     useFormValidations();
@@ -280,7 +276,9 @@ export function ExpenseForm({
               className="w-1/2 px-2 my-2 flex flex-col gap-2 relative"
               key={i}
             >
-              <label htmlFor={input.name}>{input.label}</label>
+              <label htmlFor={input.name} className="text-sm sm:text-lg">
+                {input.label}
+              </label>
               <input
                 type={input.type}
                 id={input.name}
@@ -305,6 +303,7 @@ export function ExpenseForm({
               key={i}
               selector={selector}
               handleChange={handleChange}
+              isLast={i === formSelectors.length - 1}
             />
           ))}
         </div>
@@ -330,7 +329,7 @@ export function ExpenseForm({
   );
 }
 
-const FormSelector = ({ selector, handleChange }) => {
+const FormSelector = ({ selector, handleChange, isLast }) => {
   const { formatLabel } = useFormatter();
   const [activeOptions, setActiveOptions] = useState(false);
 
@@ -346,7 +345,7 @@ const FormSelector = ({ selector, handleChange }) => {
 
   return (
     <div className="p-2 flex flex-col gap-2 relative">
-      <span>{selector.label}</span>
+      <span className="text-sm sm:text-lg">{selector.label}</span>
       <div
         onClick={() => setActiveOptions(!activeOptions)}
         className="flex justify-between items-center gap-2 bg-slate-700 rounded-md p-2 text-sm cursor-pointer"
@@ -354,7 +353,9 @@ const FormSelector = ({ selector, handleChange }) => {
         {formatLabel(selector.defaultValue)} <LuChevronDown />
       </div>
       <ul
-        className={`absolute min-w-max bg-slate-700 rounded-md p-4 text-sm flex flex-col gap-2 z-10 transition-all duration-200 ease-in-out ${
+        className={`absolute ${
+          isLast ? "right-0" : "left-0"
+        } min-w-max bg-slate-700 rounded-md p-4 text-sm flex flex-col gap-2 z-10 transition-all duration-200 ease-in-out ${
           activeOptions
             ? "top-full opacity-100 pointer-events-auto"
             : "top-20 opacity-0 pointer-events-none"
@@ -364,7 +365,7 @@ const FormSelector = ({ selector, handleChange }) => {
         {selector.options?.map((option) => (
           <li
             key={option.id}
-            className={`cursor-pointer p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center gap-2 justify-between ${
+            className={`cursor-pointer text-xs sm:text-sm p-1 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center gap-2 justify-between ${
               selector.defaultValue === option.name && "bg-purple-700"
             }`}
             onClick={() => handleOption(selector.name, option.id)}
@@ -378,7 +379,7 @@ const FormSelector = ({ selector, handleChange }) => {
         <Link to={selector.managerRoute}>
           <li
             className={
-              "cursor-pointer py-1 px-2 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
+              "cursor-pointer text-xs sm:text-sm py-1 px-2 rounded-md hover:bg-purple-600 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
             }
           >
             Add {selector.label}
