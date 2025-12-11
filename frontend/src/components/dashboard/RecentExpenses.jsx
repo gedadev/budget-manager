@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useCategories } from "../../hooks/useCategories";
 import { useFormatter } from "../../hooks/useFormatter";
 import { useNavigate } from "react-router-dom";
+import { useScreen } from "../../hooks/useScreen";
 
 export function RecentExpenses() {
   const { filteredExpenses, orderBy } = useExpenses();
+  const { isMobile } = useScreen();
   const [recentExpenses, setRecentExpenses] = useState([]);
   const [showLast, setShowLast] = useState(5);
   const navigate = useNavigate();
@@ -28,8 +30,12 @@ export function RecentExpenses() {
 
   return (
     <section className="bg-slate-800 max-w-6xl mx-auto p-4 rounded-md mt-4">
-      <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 my-4 text-xl">
+      <div
+        className={`flex items-center justify-between py-2 gap-2 text-sm ${
+          isMobile ? "flex-col" : "flex-row"
+        }`}
+      >
+        <h2 className="flex items-center gap-2 text-xl">
           <LuReceipt />
           Recent Expenses
         </h2>
@@ -37,7 +43,7 @@ export function RecentExpenses() {
           <div>
             <button
               onClick={() => navigate("expenses")}
-              className="rounded-md p-2 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all duration-200 ease-in-out"
+              className="rounded-md p-1 sm:p-2 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all duration-200 ease-in-out"
             >
               Manage expenses
             </button>
@@ -48,7 +54,7 @@ export function RecentExpenses() {
               type="text"
               value={showLast}
               onChange={handleRecentExpensesChange}
-              className="rounded-md p-2 w-12 text-center bg-transparent border border-slate-700 text-slate-300 focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
+              className="rounded-md p-1 sm:p-2 w-12 text-center bg-transparent border border-slate-700 text-slate-300 focus:outline-slate-500 focus:outline-none focus:outline-offset-0"
             />
           </div>
         </div>
@@ -65,11 +71,14 @@ export function RecentExpenses() {
 const ExpenseItem = ({ expense }) => {
   const { getCategoryName, checkActiveCategory } = useCategories();
   const { formatDate, formatCurrency } = useFormatter();
+  const { isMobile } = useScreen();
 
   const getDate = (dateInput) => {
     const { date, day, month } = formatDate(dateInput);
 
-    return `${day}, ${month} ${date}`;
+    return isMobile
+      ? `${month.slice(0, 3)} ${date}`
+      : `${day}, ${month} ${date}`;
   };
 
   return (
@@ -80,7 +89,7 @@ const ExpenseItem = ({ expense }) => {
           <LuChevronRight />
           <span>{expense.description}</span>
         </div>
-        <div className="flex items-center gap-1 text-sm text-slate-400">
+        <div className="flex items-center gap-1 text-xs sm:text-sm text-slate-400">
           <span
             className={`${
               !checkActiveCategory(expense.categoryId) && "line-through"
